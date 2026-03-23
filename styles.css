@@ -217,6 +217,27 @@ html:not(.theme-dark) .btn--secondary{color:#fff} /* on hero overlay */
 }
 textarea{min-height:140px; resize:vertical}
 
+/* Contact page background & alignment */
+body.contact-page .hero-contact{
+  position:relative;
+  background-image:url('assets/images/venti-views-PiqHSHYO3Uw-unsplash.jpg');
+  background-size:cover; background-position:center; padding:96px 0; color:#fff;
+}
+body.contact-page .hero-contact::after{
+  content:""; position:absolute; inset:0; z-index:0;
+  background:linear-gradient(180deg, rgba(10,27,61,0.6), rgba(10,27,61,0.6));
+}
+body.contact-page .hero-contact .container{position:relative; z-index:1}
+body.contact-page .hero-contact .lead{color:rgba(241,245,249,0.95)}
+
+/* Center contact card and improve spacing */
+body.contact-page .contact-card{max-width:760px; margin:40px auto; padding:40px; text-align:center}
+body.contact-page .contact-card .lead, body.contact-page .contact-card p{color:var(--muted); margin:8px 0}
+@media (max-width:640px){
+  body.contact-page .hero-contact{padding:64px 0}
+  body.contact-page .contact-card{margin:20px 16px; padding:28px}
+}
+
 /* ==== Tablet ==== */
 @media (max-width:1024px){
   .grid-3{grid-template-columns:repeat(2,1fr)}

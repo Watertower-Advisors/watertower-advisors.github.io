@@ -84,7 +84,7 @@ watertower.github.io/
 - Tags and read time
 
 ### 6. Contact (`contact.html`)
-- Contact form
+- Contact details (email link)
 - Company information
 
 ## 🎨 Customization Guide
@@ -306,54 +306,23 @@ Requires modern browser with support for:
 - Intersection Observer API
 - ES6+ JavaScript
 
-## 📞 Contact Form
+## 📞 Contact
 
-The contact form is **self-contained** and uses the `mailto:` protocol to open the user's email client.
+The site no longer includes an in-page contact form. The `contact.html` page now displays the company's contact information so visitors can email or call directly.
 
-### How It Works
+Current contact:
+- **Email:** info@watertoweradvisors.com (`contact.html`)
+- **Phone:** (310) 498-7373
 
-1. User fills out the form
-2. Clicks "Send Message"
-3. Their default email client opens with a pre-filled email containing:
-   - To: pranavlodha@outlook.com (or info@watertoweradvisors.com in production)
-   - Subject: New Contact from [Name]
-   - Body: All form data formatted nicely
-4. User clicks send in their email client
+To change the displayed email or phone number, edit the contact details in `contact.html` (the static link at the center of that page).
 
-### Configuration
+If you prefer a seamless form submission experience, consider integrating a form service such as FormSpree or EmailJS, or adding a lightweight backend to handle form posts.
 
-To change the email address, edit the `CONTACT_EMAIL` constant in `contact.html`:
+### Analytics & Consent
 
-```javascript
-const CONTACT_EMAIL = 'info@watertoweradvisors.com'; // Update this line
-```
+A consent-aware Google Analytics loader was added at `assets/js/consent.js`. It shows a small cookie consent banner and injects the GA4 `gtag.js` script only after the visitor accepts. The GA measurement ID used in this branch is `G-FB92R71P1W`.
 
-### Pros & Cons
-
-**Pros:**
-- ✅ Completely self-contained (no external services)
-- ✅ No backend server needed
-- ✅ Works on GitHub Pages
-- ✅ No account setup required
-- ✅ Zero cost
-- ✅ User sees exactly what's being sent
-
-**Cons:**
-- ⚠️ Requires user to have an email client configured
-- ⚠️ User must manually click "Send" in their email app
-- ⚠️ Won't work if user doesn't have email client set up
-- ⚠️ Less seamless than a proper form submission
-
-### Alternative: Add a Backend Service
-
-If you want a seamless form experience, you'll need ONE of these:
-
-1. **FormSpree** (easiest, 50 free submissions/month) - Requires account
-2. **EmailJS** (100 free emails/month) - Requires account  
-3. **AWS Lambda + SES** (very cheap) - Requires AWS account
-4. **Your own server** with email sending capability
-
-For a production investment banking site, I recommend using FormSpree or a similar service for better UX. The `mailto:` solution works but isn't ideal for professional services.
+If you need event tracking (CTA clicks, outbound links), we can add data attributes and a small `analytics-events.js` to send `gtag('event', ...)` calls after consent.
 
 ## 🔐 Environment & Secrets
 

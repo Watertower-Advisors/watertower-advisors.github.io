@@ -11,8 +11,9 @@
     <link rel="icon" type="image/png" sizes="16x16" href="assets/logos/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="assets/logos/apple-touch-icon.png" />
     <link rel="stylesheet" href="styles.css" />
+    <script src="assets/js/consent.js" defer></script>
   </head>
-  <body>
+  <body class="contact-page">
     <!-- Page Loader -->
     <div class="page-loader">
       <div class="loader-spinner"></div>
@@ -37,7 +38,7 @@
     </header>
 
     <main>
-      <section class="section" aria-labelledby="contact-h">
+      <section class="section hero-contact" aria-labelledby="contact-h">
         <div class="container fade-in">
           <div class="kicker">Contact</div>
           <h1 id="contact-h" class="h2">We'd love to hear from you</h1>
@@ -45,40 +46,14 @@
         </div>
       </section>
 
-      <section class="section" aria-label="Contact Form">
-        <div class="container grid grid-2">
-          <form class="form card fade-in" id="contact-form">
-            <!-- Success/Error Messages -->
-            <div id="form-messages" style="display:none; padding:12px; border-radius:8px; margin-bottom:16px;"></div>
-            
-            <label>
-              <span>Name</span><br />
-              <input class="input" type="text" name="name" id="name" autocomplete="name" required aria-required="true" />
-            </label>
-            <label>
-              <span>Company</span><br />
-              <input class="input" type="text" name="company" id="company" autocomplete="organization" />
-            </label>
-            <label>
-              <span>Email</span><br />
-              <input class="input" type="email" name="email" id="email" autocomplete="email" required aria-required="true" />
-            </label>
-            <label>
-              <span>Message</span><br />
-              <textarea name="message" id="message" required aria-required="true" placeholder="Tell us about your raise, M&amp;A, or goals"></textarea>
-            </label>
-            <div>
-              <button class="btn btn--primary" type="submit" id="submit-btn">Send Message</button>
-            </div>
-          </form>
-
-          <aside class="card fade-in fade-in-delay-1" aria-label="Contact Details">
-            <h2 class="h3">Get in touch</h2>
-            <p class="body" style="margin:0 0 12px">Prefer email or a quick call?</p>
-            <p style="margin:0 0 8px"><strong>Email:</strong> <a href="mailto:info@watertoweradvisors.com">info@watertoweradvisors.com</a></p>
-            <p style="margin:0 0 8px"><strong>Phone:</strong> <a href="tel:+13104987373">(310) 498-7373</a></p>
-            <p style="margin:0 0 8px"><strong>Address:</strong> Los Angeles, CA</p>
-          </aside>
+      <section class="section" aria-label="Contact">
+        <div class="container">
+          <div class="card contact-card fade-in">
+            <div class="kicker">Contact</div>
+            <h2 class="h2">Get in touch</h2>
+            <p class="lead">Email us at <a href="mailto:info@watertoweradvisors.com">info@watertoweradvisors.com</a></p>
+            <p>Or call: <a href="tel:+13104987373">(310) 498-7373</a></p>
+          </div>
         </div>
       </section>
     </main>
@@ -92,67 +67,5 @@
       </div>
     </footer>
     <script src="script.js"></script>
-    <script>
-      // Contact form handling
-      document.addEventListener('DOMContentLoaded', () => {
-        const form = document.querySelector('.form');
-        cSelf-contained contact form - opens user's email client with pre-filled data
-      // This is the only way to "send email" from a static site without a backend
-      document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('contact-form');
-        const submitBtn = document.getElementById('submit-btn');
-        const formMessages = document.getElementById('form-messages');
-        
-        // Configuration - change this email when deploying
-        const CONTACT_EMAIL = 'info@watertoweradvisors.com'; // Change to info@watertoweradvisors.com for production
-        
-        if (form) {
-          form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Get form values
-            const name = document.getElementById('name').value;
-            const company = document.getElementById('company').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-            
-            // Validate required fields
-            if (!name || !email || !message) {
-              formMessages.style.display = 'block';
-              formMessages.style.background = '#EF4444';
-              formMessages.style.color = '#fff';
-              formMessages.textContent = '✗ Please fill out all required fields.';
-              setTimeout(() => {
-                formMessages.style.display = 'none';
-              }, 3000);
-              return;
-            }
-            
-            // Create email content
-            const subject = encodeURIComponent(`New Contact from ${name} - Watertower Advisors`);
-            const body = encodeURIComponent(
-              `Name: ${name}\n` +
-              `Company: ${company}\n` +
-              `Email: ${email}\n\n` +
-              `Message:\n${message}\n\n` +
-              `---\nSent from Watertower Advisors contact form`
-            );
-            
-            // Open user's email client with pre-filled data
-            const mailtoLink = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
-            window.location.href = mailtoLink;
-            
-            // Show success message
-            formMessages.style.display = 'block';
-            formMessages.style.background = 'var(--accent-2)';
-            formMessages.style.color = '#fff';
-            formMessages.textContent = '✓ Opening your email client... Please send the pre-filled email to complete your message.';
-            
-            // Reset form after delay
-            setTimeout(() => {
-              form.reset();
-              formMessages.style.display = 'none';
-            }, 5000);
-    </script>
   </body>
 </html>
