@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s \"https://cdn.prod.website-files.com/64d67ad9fd11b655c45d32af/css/axom-partners-8675309.webflow.shared.3edd2095a.css\")",
+      "Bash(curl -s https://cdn.prod.website-files.com/64d67ad9fd11b655c45d32af/css/axom-partners-8675309.webflow.shared.3edd2095a.css)",
+      "Bash(curl -s \"https://www.axompartners.com/\")"
+    ]
+  }
+}
