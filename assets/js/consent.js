@@ -42,7 +42,7 @@
     inner.style.gap = '12px';
 
     var msg = document.createElement('div');
-    msg.textContent = 'We use cookies to analyze site usage. You can accept or decline.';
+    msg.innerHTML = 'Watertower Advisors use cookies to enhance your experience on our website and help us show you more relevant content and help our website run effectively. Some cookies are necessary and are always active. Read more in our <a href="#" style="color:#0047FF;text-decoration:underline">Cookie Policy here</a>.';
 
     var actions = document.createElement('div');
     var btnAccept = document.createElement('button');
@@ -65,12 +65,43 @@
       left: '16px',
       right: '16px',
       bottom: '16px',
-      background: '#ffffff',
-      border: '1px solid rgba(0,0,0,0.08)',
-      padding: '12px',
+      background: '#171717',
+      border: '1px solid #2a2a2a',
+      color: '#ffffff',
+      padding: '16px 20px',
       zIndex: 2147483647,
-      boxShadow: '0 6px 24px rgba(0,0,0,0.12)',
-      borderRadius: '6px'
+      boxShadow: '0 6px 32px rgba(0,0,0,0.5)',
+      borderRadius: '10px',
+      fontSize: '14px'
+    });
+
+    Object.assign(msg.style,{
+      color: '#BABABA',
+      lineHeight: '1.5'
+    });
+
+    Object.assign(btnAccept.style,{
+      background: '#0047FF',
+      color: '#ffffff',
+      border: 'none',
+      padding: '9px 20px',
+      borderRadius: '6px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      fontSize: '14px',
+      whiteSpace: 'nowrap'
+    });
+
+    Object.assign(btnDecline.style,{
+      background: 'transparent',
+      color: '#8B8B8B',
+      border: '1px solid #3a3a3a',
+      padding: '9px 20px',
+      borderRadius: '6px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      fontSize: '14px',
+      whiteSpace: 'nowrap'
     });
 
     document.body.appendChild(div);
