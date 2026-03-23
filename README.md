@@ -1,12 +1,14 @@
 # Watertower Advisors Website
 
-A modern, responsive website for Watertower Advisors - a boutique investment banking firm specializing in capital raising, M&A, and strategic advisory for venture-backed companies.
+A modern, responsive website for Watertower Advisors — a boutique investment banking firm specializing in capital raising, M&A, and strategic advisory for venture-backed companies.
 
-## 🌐 Live Site
+## Live Site
 
 **URL**: [https://watertoweradvisors.github.io](https://watertoweradvisors.github.io)
 
-## 📋 Table of Contents
+---
+
+## Table of Contents
 
 - [Overview](#overview)
 - [Project Structure](#project-structure)
@@ -14,176 +16,201 @@ A modern, responsive website for Watertower Advisors - a boutique investment ban
 - [Customization Guide](#customization-guide)
 - [Assets](#assets)
 - [Blog Configuration](#blog-configuration)
+- [Analytics & Cookie Consent](#analytics--cookie-consent)
 - [Deployment](#deployment)
 - [Technical Details](#technical-details)
-- [Browser Support](#browser-support)
+- [Common Issues](#common-issues)
 
-## 🎯 Overview
+---
 
-This is a static website built with clean HTML, CSS, and JavaScript. It features:
+## Overview
 
-- ✅ Fully responsive design (mobile, tablet, desktop)
-- ✅ Dark mode support (automatic based on system preference)
-- ✅ Smooth scroll animations
-- ✅ Automatic Medium blog integration
-- ✅ Fast loading with page loader
-- ✅ SEO optimized
-- ✅ Accessible (ARIA labels, semantic HTML)
+Static website built with HTML, CSS, and vanilla JavaScript. No frameworks or build tools required.
 
-## 📁 Project Structure
+- Fully responsive (mobile, tablet, desktop)
+- Always-dark color scheme (Axom-inspired)
+- Smooth scroll animations
+- Medium blog integration (currently hidden from nav — see Blog section)
+- Cookie consent banner with GA4 analytics
+- SEO optimized with semantic HTML and ARIA labels
+
+---
+
+## Project Structure
 
 ```
 watertower.github.io/
 ├── index.html          # Homepage
-├── about.html          # About page
+├── about.html          # About / Team page
 ├── services.html       # Services page
 ├── industries.html     # Industries page
-├── blog.html           # Blog page (auto-fetches from Medium)
-├── contact.html        # Contact page
-├── styles.css          # Global styles
-├── script.js           # Global JavaScript
-├── blog.js             # Blog-specific JavaScript
+├── contact.html        # Contact page (full-page background image)
+├── blog.html           # Blog page (hidden from nav — do not delete)
+├── styles.css          # All global styles and CSS variables
+├── script.js           # Global JS (page loader, scroll animations, counter)
+├── blog.js             # Blog JS (Medium RSS fetch and rendering)
 ├── README.md           # This file
-├── BLOG_README.md      # Blog-specific documentation
 └── assets/
     ├── hero/           # Hero/banner images
-    ├── images/         # General images
-    ├── logos/          # Favicon and logo files
-    └── team/           # Team member photos
+    ├── images/         # General page images (industries, contact bg)
+    ├── logos/          # Favicon files
+    ├── team/           # Team member photos
+    └── Watertower Advisors Logo Package/
+                        # Full logo package (SVG, PNG variants)
 ```
 
-## 📄 Pages
+---
+
+## Pages
 
 ### 1. Homepage (`index.html`)
-- Hero section with background image
-- Stats section (animated counters)
-- Services overview
-- Call-to-action section
+- Full-bleed hero with LA palms background image
+- Animated stats counters (25 years, $500M+, 100 deals)
+- Services overview cards (Capital Raising, M&A, Strategic Advisory)
+- "Let's Talk" CTA button linking to contact page
 
 ### 2. About (`about.html`)
-- Company overview
-- Approach/values
-- Team members with photos
+- Company overview with LA palms image
+- Three approach pillars: Data-Driven, Founder-First, Network Reach
+- Founder spotlight: Derek Norton
+- Team grid: Connor Doyle, Pranav Lodha, Dale Ligon
+- Advisors section: Michael Kassan, Allen Debevoise, Jordan Levin, Mark Terbeek, Kevin Wall
 
 ### 3. Services (`services.html`)
-- Detailed service descriptions
-- Capital raising
-- M&A advisory
-- Strategic advisory
+- Capital Raising ($10M–$150M equity and debt)
+- M&A Advisory
+- Strategic Advisory
+- Client testimonials (Riot Games / Brandon Beck, Machinima / Allan DeBevoise)
 
 ### 4. Industries (`industries.html`)
-- Target industries and sectors
 - Media & Entertainment Tech
-- Consumer Internet & Marketplaces
-- Enterprise SaaS & AI
+- Music & Audio
+- Gaming & Interactive
+- Creator Economy
+- Deep Tech & AI
+- Internet & Web3
+- Each section has an image and expandable verticals list
 
-### 5. Blog (`blog.html`)
-- **Automatically fetches posts from Medium**
-- Displays posts in chronological order
-- Clean card-based layout
-- Tags and read time
+### 5. Contact (`contact.html`)
+- Full-page background image (`assets/images/venti-views-PiqHSHYO3Uw-unsplash.jpg`)
+- Centered text with email and phone CTA buttons
+- Email: info@watertoweradvisors.com
+- Phone: (310) 498-7373
 
-### 6. Contact (`contact.html`)
-- Contact details (email link)
-- Company information
+### 6. Blog (`blog.html`) — Hidden
+- **Not linked in the nav.** The file is kept for when a Medium account is ready.
+- Automatically fetches posts from Medium via RSS when enabled.
+- To re-enable: add `<a class="nav__link" href="blog.html">Blog</a>` to the nav in all HTML files and update the Medium URL (see Blog Configuration below).
 
-## 🎨 Customization Guide
+---
 
-### Updating Text Content
+## Customization Guide
 
-All text can be edited directly in the HTML files:
+### Colors
 
-1. **Company Name/Branding**: Search for `WATERTOWER ADVISORS` in all HTML files
-2. **Tagline**: Look for `INVESTMENT BANK` tag
-3. **Services**: Edit in `services.html` and `index.html`
-4. **Stats**: Update `data-count` attributes in `index.html`
-
-### Updating Colors
-
-Colors are defined as CSS variables in `styles.css`:
+The site uses a permanent dark theme. All colors are CSS variables in `styles.css`:
 
 ```css
 :root {
-  --bg: #FFFFFF;           /* Background color */
-  --ink: #0A1B3D;          /* Primary text color */
-  --muted: #4B5563;        /* Secondary text color */
-  --line: #E5E7EB;         /* Border/divider color */
-  --accent: #0EA5E9;       /* Primary accent (blue) */
-  --accent-2: #10B981;     /* Secondary accent (green) */
-  --card: #F8FAFC;         /* Card background */
+  --bg:       #060606;   /* Page background */
+  --card:     #171717;   /* Card / surface background */
+  --ink:      #FFFFFF;   /* Primary text */
+  --muted:    #8B8B8B;   /* Secondary / muted text */
+  --line:     #1F1F1F;   /* Borders and dividers */
+  --accent:   #0047FF;   /* Primary accent (electric blue) */
+  --accent-2: #3324D5;   /* Secondary accent (purple) */
 }
 ```
 
-### Updating Fonts
+### Fonts
 
-Current fonts:
 - **Headings**: Manrope (700, 800)
 - **Body**: Inter (400, 500, 600)
 
 To change fonts, update the `@import` at the top of `styles.css`.
 
-### Navigation Menu
+### Text Content
 
-To add/remove navigation items, edit the `<nav class="nav__links">` section in each HTML file:
+All text is in the HTML files and can be edited directly:
+
+- **Stats** (homepage): update `data-count` attributes in `index.html`
+- **Team bios**: edit the card content in `about.html`
+- **Services**: edit in `services.html` and the cards in `index.html`
+- **Contact details**: edit the email/phone links in `contact.html`
+
+### Navigation
+
+The nav appears in all HTML files. To add or remove a link, edit the `<nav class="nav__links">` block in **every** HTML file to keep them consistent:
 
 ```html
 <nav class="nav__links" aria-label="Primary">
   <a class="nav__link" href="about.html">About</a>
   <a class="nav__link" href="services.html">Services</a>
   <a class="nav__link" href="industries.html">Industries</a>
-  <a class="nav__link" href="blog.html">Blog</a>
   <a class="nav__link" href="contact.html">Contact</a>
+  <!-- Blog is intentionally hidden. Add the line below when ready: -->
+  <!-- <a class="nav__link" href="blog.html">Blog</a> -->
 </nav>
 ```
 
-**Important**: Update navigation on ALL pages to maintain consistency.
+### Logo
 
-## 🖼️ Assets
+The nav and footer on all pages use:
+```
+assets/Watertower Advisors Logo Package/Digital (RGB)/Wordmarks/Wordmark V3/SVG/WatertowerAdvisors_rgb_wordmark_v3_white_cropped.svg
+```
+This is the white SVG wordmark, designed for dark backgrounds. To swap it, replace the `src` in the `<img>` tag inside `.nav__brand` and `.footer-brand` across all HTML files.
 
-### Required Assets
+### Favicon
 
-#### 1. **Hero Images** (`assets/hero/`)
-- `la-palms.jpg` - Homepage hero
-- `services-hero.jpg` - Services page hero
-- Format: JPEG, recommended size: 1920x1080px
-- Optimize images for web (keep under 500KB)
+All pages use:
+```
+assets/Watertower Advisors Logo Package/Digital (RGB)/Logomarks/Logomark V1/PNG (Transparent Background)/WatertowerAdvisors_rgb_logomark_v1_navy_cropped1080px.png
+```
+To change it, update the three `<link rel="icon">` tags in the `<head>` of each HTML file.
 
-#### 2. **Team Photos** (`assets/team/`)
-- Format: SVG or JPG
-- Aspect ratio: 4:3
-- Names: `alex-lee.svg`, `jordan-rivera.svg`, `sam-patel.svg`
+---
 
-#### 3. **Logos/Favicons** (`assets/logos/`)
-- `favicon.ico` - Main favicon (16x16, 32x32, 48x48)
-- `favicon-192x192.png` - Android icon
-- `favicon-32x32.png` - Standard favicon
-- `favicon-16x16.png` - Small favicon
-- `apple-touch-icon.png` - iOS icon (180x180)
+## Assets
 
-### Adding New Assets
+### Hero & Background Images (`assets/hero/`, `assets/images/`)
 
-1. Place files in the appropriate `assets/` subdirectory
-2. Update the HTML reference:
-   ```html
-   <img src="assets/folder/filename.jpg" alt="Description" />
-   ```
-3. Optimize images before uploading (use tools like TinyPNG, ImageOptim)
+| File | Used On |
+|---|---|
+| `assets/hero/la-palms.jpg` | Homepage hero, About page image |
+| `assets/images/venti-views-PiqHSHYO3Uw-unsplash.jpg` | Contact page full-page background |
+| `assets/images/marvin-meyer-*.jpg` | Industries — Media Tech |
+| `assets/images/music-audio.jpg` | Industries — Music & Audio |
+| `assets/images/gaming.jpg` | Industries — Gaming |
+| `assets/images/creator-economy.jpg` | Industries — Creator Economy |
+| `assets/images/alex-knight-*.jpg` | Industries — Deep Tech |
+| `assets/images/internet-web3.jpg` | Industries — Internet & Web3 |
 
-### Image Optimization Tips
+### Team Photos (`assets/team/`)
 
-- **Hero images**: 1920x1080px, JPEG, quality 80-85%, under 500KB
-- **Team photos**: 800x600px, JPEG, quality 85-90%, under 200KB
-- **Logos**: Use SVG when possible for crisp display at any size
-- **Icons**: SVG preferred, or PNG with multiple sizes
+| File | Person |
+|---|---|
+| `derek-norton.jpg` | Derek Norton — Founder |
+| `connor-doyle.jpg` | Connor Doyle — Managing Director |
+| `pranav-lodha.jpg` | Pranav Lodha — Associate |
+| `alex-lee.svg` | Dale Ligon — Executive Assistant (placeholder, replace with real photo) |
+| `michael-kassan.jpg` | Michael Kassan — Advisor |
+| `allen-debevoise.jpg` | Allen Debevoise — Advisor |
+| `jordan-levin.jpg` | Jordan Levin — Advisor |
+| `mark-terbeek.jpg` | Mark Terbeek — Advisor |
+| `kevin-wall.jpg` | Kevin Wall — Advisor |
 
-## 📝 Blog Configuration
+**To replace Dale Ligon's placeholder**: add a real photo as `assets/team/dale-ligon.jpg` (or any name), then update the `src` on that `<img>` tag in `about.html`.
 
-### Quick Setup
+---
 
-> **ACTION REQUIRED**: Update the Medium URL in `blog.js` before launching the blog.
+## Blog Configuration
 
-1. Open `blog.js`
-2. Find line 6 and update `MEDIUM_URL` to the correct Watertower Advisors Medium account:
+> **ACTION REQUIRED before enabling the blog**: Update the Medium URL in `blog.js`.
+
+The blog page (`blog.html`) is built and ready but is currently hidden from the navigation. When a Watertower Advisors Medium account exists:
+
+**Step 1** — Update `blog.js` line 6:
 
 ```javascript
 // blog.js — line 6
@@ -193,206 +220,110 @@ const MEDIUM_URL = 'https://medium.com/@watertoweradvisors'; // <-- UPDATE THIS
 Accepted formats:
 ```javascript
 const MEDIUM_URL = 'https://medium.com/@watertoweradvisors';
-// or a custom domain if you have one:
+// or a custom domain:
 const MEDIUM_URL = 'https://watertoweradvisors.medium.com';
 ```
 
-3. Save the file - **that's it!**
+**Step 2** — Re-add the Blog nav link in all HTML files (see Navigation section above).
 
-### How It Works
+### How the blog works
 
-- The blog automatically fetches your Medium posts via RSS feed
-- Uses RSS2JSON API to convert RSS to JSON (bypasses CORS)
-- Posts display in chronological order (newest first)
-- Updates automatically when visitors load the page
-- No manual updates needed when you publish new posts
+- Fetches posts from Medium via RSS on page load
+- Uses the free RSS2JSON API to bypass CORS
+- Displays posts newest-first with title, date, read time, tags, and a "Read on Medium" link
+- No manual updates needed — new posts appear automatically when published
 
-### Troubleshooting Blog Issues
+### Troubleshooting
 
-If posts don't load:
-
-1. **Check the Medium URL format** - should be one of:
-   - `https://username.medium.com`
-   - `https://medium.com/@username`
-   - `https://custom.medium.com`
-
-2. **Open browser console** (F12 or Cmd+Option+I) and look for errors
-
-3. **Verify Medium RSS feed works** by visiting:
-   ```
-   https://username.medium.com/feed
-   ```
-
-4. **Check RSS2JSON API** is working:
-   ```
-   https://api.rss2json.com/v1/api.json?rss_url=YOUR_FEED_URL
-   ```
-
-For detailed blog documentation, see [BLOG_README.md](BLOG_README.md).
-
-## 🚀 Deployment
-
-### GitHub Pages (Current Setup)
-
-This site is configured for GitHub Pages deployment:
-
-1. **Repository name must be**: `username.github.io` or organization name
-2. **Branch**: `main` (or `master`)
-3. **Settings**: Go to Settings → Pages → Source: Deploy from `main` branch
-
-### Making Changes
-
-1. Edit files locally
-2. Commit changes:
-   ```bash
-   git add .
-   git commit -m "Description of changes"
-   git push origin main
-   ```
-3. GitHub Pages will automatically rebuild (takes 1-2 minutes)
-4. Visit your site to see changes
-
-### Custom Domain
-
-To use a custom domain (e.g., `watertoweradvisors.com`):
-
-1. Add a `CNAME` file to the root with your domain name
-2. Configure DNS records with your domain provider:
-   - Add a CNAME record pointing to `username.github.io`
-3. Update in GitHub Settings → Pages → Custom domain
-
-## 🔧 Technical Details
-
-### Technologies Used
-
-- **HTML5** - Semantic markup
-- **CSS3** - Modern styling with CSS Grid, Flexbox, Variables
-- **JavaScript (ES6+)** - Vanilla JS, no frameworks
-- **RSS2JSON API** - Medium blog integration
-- **Google Fonts** - Inter & Manrope fonts
-
-### Features
-
-#### Page Loader
-- Displays while page assets load
-- Fades out automatically after 400ms
-- Implemented in `script.js`
-
-#### Scroll Animations
-- Uses Intersection Observer API
-- Elements fade in as they scroll into view
-- Staggered delays for multiple elements
-
-#### Responsive Design
-- Mobile-first approach
-- Breakpoints:
-  - Desktop: > 1024px
-  - Tablet: 640px - 1024px
-  - Mobile: < 640px
-
-#### Dark Mode
-- Automatically detects system preference
-- Uses CSS `prefers-color-scheme` media query
-- Can be extended with manual toggle if needed
-
-#### Stats Counter Animation
-- Animated number counting on scroll
-- Formats numbers (K, M suffixes)
-- Only animates once per page load
-
-### Browser Compatibility
-
-- ✅ Chrome (latest)
-- ✅ Firefox (latest)
-- ✅ Safari (latest)
-- ✅ Edge (latest)
-- ✅ Mobile browsers (iOS Safari, Chrome Android)
-
-Requires modern browser with support for:
-- CSS Grid
-- CSS Variables
-- Intersection Observer API
-- ES6+ JavaScript
-
-## 📞 Contact
-
-The site no longer includes an in-page contact form. The `contact.html` page now displays the company's contact information so visitors can email or call directly.
-
-Current contact:
-- **Email:** info@watertoweradvisors.com (`contact.html`)
-- **Phone:** (310) 498-7373
-
-To change the displayed email or phone number, edit the contact details in `contact.html` (the static link at the center of that page).
-
-If you prefer a seamless form submission experience, consider integrating a form service such as FormSpree or EmailJS, or adding a lightweight backend to handle form posts.
-
-### Analytics & Consent
-
-A consent-aware Google Analytics loader was added at `assets/js/consent.js`. It shows a small cookie consent banner and injects the GA4 `gtag.js` script only after the visitor accepts. The GA measurement ID used in this branch is `G-FB92R71P1W`.
-
-If you need event tracking (CTA clicks, outbound links), we can add data attributes and a small `analytics-events.js` to send `gtag('event', ...)` calls after consent.
-
-## 🔐 Environment & Secrets
-
-No environment variables or API keys are currently stored in the code. The RSS2JSON API is free and doesn't require authentication.
-
-If you add features that need API keys:
-1. Never commit API keys to the repository
-2. Use GitHub Secrets for sensitive data
-3. Implement a backend service to proxy API calls
-
-## 📊 Analytics (Optional)
-
-To add Google Analytics:
-
-1. Get your GA4 tracking ID from Google Analytics
-2. Add to the `<head>` of all HTML pages:
-
-```html
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX');
-</script>
-```
-
-## 🐛 Common Issues & Solutions
-
-### Issue: Blog stuck on "Loading posts..."
-**Solution**: Check browser console for errors, verify Medium URL format, ensure RSS feed is accessible
-
-### Issue: Images not loading
-**Solution**: Verify file paths are correct and files exist in `assets/` folder
-
-### Issue: Dark mode not working
-**Solution**: Check browser supports `prefers-color-scheme`, clear browser cache
-
-### Issue: Animations not triggering
-**Solution**: Ensure JavaScript is enabled, check console for errors
-
-### Issue: Mobile menu not closing
-**Solution**: Clear browser cache, verify `script.js` is loading correctly
-
-## 🔄 Version History
-
-- **v1.0** (Jan 2026) - Initial launch with 5 pages
-- **v1.1** (Jan 2026) - Added blog page with automatic Medium integration
-
-## 📝 License
-
-This is a proprietary website for Watertower Advisors. All rights reserved.
-
-## 🤝 Support
-
-For issues or questions about the website:
-1. Check this README first
-2. Review `BLOG_README.md` for blog-specific issues
-3. Check browser console for error messages
-4. Verify all file paths and asset locations
+- Verify the RSS feed exists: `https://medium.com/feed/@watertoweradvisors`
+- Open browser console (F12) for error details
+- Test the RSS2JSON conversion: `https://api.rss2json.com/v1/api.json?rss_url=YOUR_FEED_URL`
 
 ---
 
-**Last Updated**: January 15, 2026
+## Analytics & Cookie Consent
+
+Analytics is handled by `assets/js/consent.js`, which is loaded on every page.
+
+- Shows a cookie consent banner on first visit
+- Only loads Google Analytics (GA4) after the visitor clicks **Accept**
+- Stores the choice in `localStorage` — banner does not reappear after a decision
+- GA Measurement ID: `G-FB92R71P1W`
+
+To update the GA ID, change the `GA_ID` value at the top of `consent.js`:
+
+```javascript
+var GA_ID = 'G-FB92R71P1W'; // <-- update if the GA property changes
+```
+
+---
+
+## Deployment
+
+The site is hosted on GitHub Pages.
+
+### Making Changes
+
+```bash
+git add .
+git commit -m "Description of changes"
+git push origin main
+```
+
+GitHub Pages rebuilds automatically. Changes are live within 1–2 minutes.
+
+### Custom Domain
+
+The site is served at `watertoweradvisors.github.io`. If you ever move to a custom domain:
+
+1. Add a `CNAME` file in the repo root containing the domain (e.g. `watertoweradvisors.com`)
+2. Point a CNAME DNS record at `watertoweradvisors.github.io`
+3. Set the custom domain in GitHub → Settings → Pages
+
+---
+
+## Technical Details
+
+- **HTML5** — semantic markup, ARIA labels throughout
+- **CSS3** — CSS Grid, Flexbox, custom properties, no frameworks
+- **JavaScript (ES6+)** — vanilla JS, no build step required
+- **Google Fonts** — Inter & Manrope (loaded via `@import` in `styles.css`)
+- **RSS2JSON API** — free, no auth required, used for Medium integration
+
+### Breakpoints
+
+| Range | Layout |
+|---|---|
+| > 1024px | Desktop (3-column grids) |
+| 640–1024px | Tablet (2-column grids) |
+| < 640px | Mobile (single column, hamburger nav) |
+
+---
+
+## Common Issues
+
+**Blog stuck on "Loading posts..."**
+Update `MEDIUM_URL` in `blog.js` to a valid Medium account and verify the RSS feed URL is accessible.
+
+**Images not loading**
+Check that file paths in HTML match the actual filenames exactly (case-sensitive on Linux/GitHub Pages).
+
+**Animations not triggering**
+JavaScript must be enabled. Check the browser console for errors.
+
+**Mobile menu not closing**
+Clear browser cache and verify `script.js` is loading without errors.
+
+**Cookie banner reappears after accepting**
+Check that `localStorage` is not being cleared between sessions (e.g. private browsing mode clears it on close).
+
+---
+
+## Contact
+
+- **Email**: info@watertoweradvisors.com
+- **Phone**: (310) 498-7373
+
+---
+
+*Last Updated: March 2026*
