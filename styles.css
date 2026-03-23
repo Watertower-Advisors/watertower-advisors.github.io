@@ -424,6 +424,59 @@ body.contact-page main.contact-fullpage{
   margin-bottom:0;
 }
 
+/* ==== Client Logo Strip ==== */
+.client-logos{
+  display:flex; align-items:center; justify-content:center;
+  gap:48px; flex-wrap:wrap;
+}
+
+.client-logo{
+  height:36px; width:auto; max-width:140px; object-fit:contain;
+  filter:grayscale(100%) opacity(0.6);
+  transition:var(--transition);
+}
+
+.client-logo:hover{
+  filter:grayscale(0%) opacity(1);
+  transform:translateY(-2px);
+}
+
+.client-logos--large{
+  gap:64px;
+}
+
+.client-logo--large{
+  height:52px; max-width:180px;
+}
+
+/* ==== Testimonial Teaser (index.html) ==== */
+.testimonials-teaser{
+  background:var(--card);
+}
+
+.testimonial-teaser-quote{
+  max-width:760px; margin:40px auto 0;
+  background:var(--bg); border:1px solid var(--line);
+  border-radius:16px; padding:40px;
+}
+
+.testimonial-teaser-quote blockquote{
+  margin:0 0 28px; padding:0; border:none;
+  font-style:italic; color:var(--muted); line-height:1.8;
+  font-size:17px; position:relative;
+}
+
+.testimonial-teaser-quote blockquote::before{
+  content:'"'; font-size:56px; color:var(--accent);
+  opacity:0.25; position:absolute; left:-4px; top:-16px;
+  font-family:Georgia, serif; line-height:1;
+}
+
+.testimonial-teaser-author{
+  display:flex; align-items:center; gap:16px;
+  padding-top:24px; border-top:1px solid var(--line);
+}
+
 /* ==== Testimonials ==== */
 .testimonials-section{
   background:var(--bg);
