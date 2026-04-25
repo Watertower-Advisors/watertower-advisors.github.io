@@ -4,21 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Contact — Watertower Advisors</title>
-    <meta name="description" content="Contact Watertower Advisors to discuss capital raising, M&A, or strategic advisory." />
+    <meta name="description" content="Get in touch with Watertower Advisors. We advise venture-backed founders on M&A and capital raising. Reach us at info@watertoweradvisors.com or (310) 498-7373." />
     <!-- Canonical -->
     <link rel="canonical" href="https://watertoweradvisors.com/contact.html" />
-    <!-- Open Graph -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Watertower Advisors" />
-    <meta property="og:title" content="Contact — Watertower Advisors" />
-    <meta property="og:description" content="Contact Watertower Advisors to discuss capital raising, M&A, or strategic advisory." />
-    <meta property="og:url" content="https://watertoweradvisors.com/contact.html" />
-    <meta property="og:image" content="https://watertoweradvisors.com/assets/logos/logo.png" />
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Contact — Watertower Advisors" />
-    <meta name="twitter:description" content="Contact Watertower Advisors to discuss capital raising, M&A, or strategic advisory." />
-    <meta name="twitter:image" content="https://watertoweradvisors.com/assets/logos/logo.png" />
     <link rel="icon" href="assets/Watertower Advisors Logo Package/Digital (RGB)/Logomarks/Logomark V2/PNG (Transparent Background)/WatertowerAdvisors_rgb_logomark_v2_navy_cropped1080px.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="assets/Watertower Advisors Logo Package/Digital (RGB)/Logomarks/Logomark V2/PNG (Transparent Background)/WatertowerAdvisors_rgb_logomark_v2_navy_cropped1080px.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="assets/Watertower Advisors Logo Package/Digital (RGB)/Logomarks/Logomark V2/PNG (Transparent Background)/WatertowerAdvisors_rgb_logomark_v2_navy_cropped1080px.png" />
@@ -60,13 +48,18 @@
         <p class="lead">Tell us a bit about your company and goals. We'll reply quickly with next steps.</p>
 
         <!--
-          Form submissions are sent via Formspree (https://formspree.io).
-          SETUP: create a free Formspree form pointed at info@watertoweradvisors.com,
-          then replace YOUR_FORM_ID below with the form ID Formspree gives you
-          (e.g. action="https://formspree.io/f/abcdwxyz").
+          Form submissions are sent via Web3Forms (https://web3forms.com).
+          SETUP:
+            1. Go to https://web3forms.com and enter info@watertoweradvisors.com.
+            2. They'll email you an access key (no signup/password needed).
+            3. Replace YOUR_ACCESS_KEY in the hidden input below with that key.
+          That's it — submissions will be emailed to info@watertoweradvisors.com.
         -->
-        <form id="contact-form" class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
-          <input type="hidden" name="_subject" value="New inquiry from watertoweradvisors.com" />
+        <form id="contact-form" class="contact-form" action="https://api.web3forms.com/submit" method="POST" novalidate>
+          <input type="hidden" name="access_key" value="6d62eec4-b62c-4079-8482-25169794ce02" />
+          <input type="hidden" name="subject" value="New inquiry from watertoweradvisors.com" />
+          <input type="hidden" name="from_name" value="Watertower Advisors Website" />
+          <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" />
           <div class="contact-form__row">
             <div class="contact-form__field">
               <label for="cf-name">Name</label>
@@ -106,19 +99,18 @@
             body: data,
             headers: { 'Accept': 'application/json' }
           }).then(function(response){
-            if (response.ok) {
+            return response.json().then(function(body){
+              return { ok: response.ok, body: body };
+            });
+          }).then(function(result){
+            if (result.ok && result.body && result.body.success) {
               form.reset();
               status.textContent = "Thanks — your message is on its way. We'll be in touch shortly.";
               status.classList.add('contact-form__status--success');
             } else {
-              response.json().then(function(body){
-                var msg = (body && body.errors && body.errors.map(function(e){return e.message;}).join(', ')) || 'Something went wrong. Please email info@watertoweradvisors.com directly.';
-                status.textContent = msg;
-                status.classList.add('contact-form__status--error');
-              }).catch(function(){
-                status.textContent = 'Something went wrong. Please email info@watertoweradvisors.com directly.';
-                status.classList.add('contact-form__status--error');
-              });
+              var msg = (result.body && result.body.message) || 'Something went wrong. Please email info@watertoweradvisors.com directly.';
+              status.textContent = msg;
+              status.classList.add('contact-form__status--error');
             }
           }).catch(function(){
             status.textContent = 'Network error. Please email info@watertoweradvisors.com directly.';
