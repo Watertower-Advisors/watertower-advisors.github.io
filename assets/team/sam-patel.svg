@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Placeholder portrait: Sam Patel">
-  <rect width="800" height="600" fill="#111827"/>
-  <circle cx="400" cy="240" r="90" fill="#A7B0BF"/>
-  <rect x="280" y="320" width="240" height="200" rx="30" fill="#A7B0BF"/>
-  <text x="400" y="560" text-anchor="middle" font-family="Manrope, Arial" font-size="28" fill="#34D399">Sam Patel</text>
-</svg>
-
