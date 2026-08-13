@@ -72,7 +72,7 @@ a{color:inherit; transition:var(--transition)}
 .nav{display:flex; align-items:center; justify-content:space-between; height:90px; padding:12px 0}
 .nav__brand{display:flex; align-items:center; gap:14px; text-decoration:none; font-weight:700; transition:var(--transition); font-size:16px}
 .nav__brand:hover{opacity:0.8; transform:translateY(-1px)}
-.nav__brand img{height:45px; width:auto; max-width:300px}
+.nav__brand img{height:45px; width:auto}
 
 /* Text-based branding */
 .brand-text{
