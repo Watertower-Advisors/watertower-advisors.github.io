@@ -2,8 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap');
 
 :root{
-  --bg:#060606; --ink:#FFFFFF; --muted:#8B8B8B; --line:#1F1F1F;
-  --accent:#E85C3A; --accent-2:#B8431F; --card:#171717;
+  --bg:#14181C; --ink:#FFFFFF; --muted:#8B8B8B; --line:#252B31;
+  --accent:#E85C3A; --accent-2:#B8431F; --card:#1C2228;
   --radius:12px; --space:24px; --max:1200px;
   --transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --shadow-sm:0 1px 3px rgba(0,0,0,0.3);
@@ -68,7 +68,7 @@ a{color:inherit; transition:var(--transition)}
 .grid-2{grid-template-columns:repeat(2,1fr)}
 
 /* ==== Header ==== */
-.header{position:sticky; top:0; z-index:10; background:rgba(6,6,6,0.92); border-bottom:1px solid var(--line); backdrop-filter:blur(12px)}
+.header{position:sticky; top:0; z-index:10; background:rgba(20,24,28,0.92); border-bottom:1px solid var(--line); backdrop-filter:blur(12px)}
 .nav{display:flex; align-items:center; justify-content:space-between; height:90px; padding:12px 0}
 .nav__brand{display:flex; align-items:center; gap:14px; text-decoration:none; font-weight:700; transition:var(--transition); font-size:16px}
 .nav__brand:hover{opacity:0.8; transform:translateY(-1px)}
@@ -121,7 +121,7 @@ a{color:inherit; transition:var(--transition)}
 /* ==== Hero ==== */
 .hero{position:relative; min-height:70vh; display:flex; align-items:center; overflow:hidden}
 .hero--image{background-size:cover; background-position:center}
-.hero::after{content:""; position:absolute; inset:0; background:linear-gradient(135deg, rgba(6,6,6,.80), rgba(6,6,6,.60))}
+.hero::after{content:""; position:absolute; inset:0; background:linear-gradient(135deg, rgba(20,24,28,.80), rgba(20,24,28,.60))}
 .hero__inner{position:relative; z-index:1; color:#fff; max-width:900px}
 .hero h1{
   font-family:Manrope,Inter,sans-serif; font-weight:800; font-size:clamp(40px, 6vw, 64px); 
@@ -222,7 +222,7 @@ body.contact-page main.contact-fullpage{
 }
 .contact-overlay{
   position:absolute; inset:0;
-  background:linear-gradient(180deg, rgba(6,6,6,0.55), rgba(6,6,6,0.70));
+  background:linear-gradient(180deg, rgba(20,24,28,0.55), rgba(20,24,28,0.70));
 }
 .contact-content{
   position:relative; z-index:1;
@@ -237,7 +237,7 @@ body.contact-page main.contact-fullpage{
 .contact-form{
   display:flex; flex-direction:column; gap:18px;
   max-width:560px; margin:0 auto; text-align:left;
-  background:rgba(6,6,6,0.55); border:1px solid rgba(255,255,255,0.08);
+  background:rgba(20,24,28,0.55); border:1px solid rgba(255,255,255,0.08);
   border-radius:16px; padding:32px; backdrop-filter:blur(8px);
 }
 .contact-form__row{display:grid; grid-template-columns:1fr 1fr; gap:16px}
