@@ -80,7 +80,6 @@ watertower.github.io/
 - Capital Raising ($10M–$150M equity and debt)
 - M&A Advisory
 - Strategic Advisory
-- Client testimonials (Riot Games / Brandon Beck, Machinima / Allan DeBevoise)
 
 ### 4. Industries (`industries.html`)
 - Media & Entertainment Tech
