@@ -2295,16 +2295,16 @@ git commit -m "Migrate legal page to Astro"
 ### Task 12: Redirect stub pages (`corporate-development`, `mergers-acquisitions`)
 
 **Files:**
-- Create: `src/pages/corporate-development/index.astro`
-- Create: `src/pages/mergers-acquisitions/index.astro`
+- Create: `public/corporate-development/index.html`
+- Create: `public/mergers-acquisitions/index.html`
+
+**Correction (2026-08-31): originally specified as `src/pages/.../index.astro`. That's wrong — `build.format: 'file'` (Task 1) is a global build setting that flattens EVERY Astro-routed page, including one named via a folder's `index.astro`, to `routename.html` (so `src/pages/corporate-development/index.astro` would emit `dist/corporate-development.html`, not `dist/corporate-development/index.html`). That changes the live URL from `/corporate-development/` to `/corporate-development` (no trailing slash, flat file) — an avoidable URL-shape regression for two pages that need the OLD directory+index.html shape while every other page correctly wants the new flat shape. Fix: these two files have zero dynamic content (empty Astro frontmatter, pure static HTML) and belong in `public/`, which Astro copies to `dist/` byte-for-byte regardless of `build.format` — this guarantees the output lands at exactly `dist/corporate-development/index.html`, matching the live site's current URL exactly, with no dependency on Astro's routing/build-format behavior at all. Plain `.html` files, not `.astro` — no frontmatter fence needed since there's no Astro processing to do.**
 
 These carry the existing working stub markup unchanged — no `Base.astro`, no nav, exactly as they exist today, since they already correctly solve the problem they exist to solve.
 
-- [ ] **Step 1: Create `src/pages/corporate-development/index.astro`**
+- [ ] **Step 1: Create `public/corporate-development/index.html`**
 
-```astro
----
----
+```html
 <!doctype html>
 <html lang="en">
   <head>
@@ -2319,11 +2319,9 @@ These carry the existing working stub markup unchanged — no `Base.astro`, no n
 </html>
 ```
 
-- [ ] **Step 2: Create `src/pages/mergers-acquisitions/index.astro`**
+- [ ] **Step 2: Create `public/mergers-acquisitions/index.html`**
 
-```astro
----
----
+```html
 <!doctype html>
 <html lang="en">
   <head>
@@ -2340,14 +2338,14 @@ These carry the existing working stub markup unchanged — no `Base.astro`, no n
 
 - [ ] **Step 3: Verify**
 
-Run: `curl -s http://localhost:4321/corporate-development/ | grep -c 'meta http-equiv="refresh"'`
-Expected: `1`.
+Run: `npm run build && grep -c 'meta http-equiv="refresh"' dist/corporate-development/index.html dist/mergers-acquisitions/index.html`
+Expected: `1` for each file, AND confirm the exact paths `dist/corporate-development/index.html` and `dist/mergers-acquisitions/index.html` exist (directory + index.html, not a flat `corporate-development.html`) — this is the one thing `build.format: 'file'` cannot be allowed to touch.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/pages/corporate-development src/pages/mergers-acquisitions
-git commit -m "Carry over redirect stub pages unchanged"
+git add public/corporate-development public/mergers-acquisitions
+git commit -m "Carry over redirect stub pages unchanged, served from public/ to bypass build.format"
 ```
 
 ---
