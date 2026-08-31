@@ -2355,7 +2355,7 @@ git commit -m "Carry over redirect stub pages unchanged"
 ### Task 13: Blog content collection + migrated post
 
 **Files:**
-- Create: `src/content/config.ts`
+- Create: `src/content.config.ts` (top-level, NOT `src/content/config.ts` — see note below)
 - Create: `src/content/blog/practical-ma-playbook-for-founders.md`
 - Create: `src/pages/blog.astro`
 - Create: `src/pages/blog/[...slug].astro`
@@ -2366,13 +2366,16 @@ git commit -m "Carry over redirect stub pages unchanged"
 
 The only content that exists today is a link-out card to an externally-hosted article (`cfoadvisors.com`), not a first-party post — confirmed by reading `blog.html`: the "Featured Insight" card links out, and the "From Medium" section that `blog.js` populates has never had a real, working Medium account behind it (the URL in `blog.js` is a placeholder marked `// TODO: update with correct Medium username/URL`). The collection schema supports both link-out posts (via `externalUrl`) and future native posts (rendered from the markdown body), since that's what the site actually needs right now per the user's confirmation that no real blog cadence exists yet.
 
-- [ ] **Step 1: Create `src/content/config.ts`**
+- [ ] **Step 1: Create `src/content.config.ts`**
+
+**Correction (2026-08-31): the plan originally specified `type: 'content'` at `src/content/config.ts` — the "legacy" content collections API. Astro 6+ removed it entirely; the installed version here is 7.2.10, which throws `LegacyContentConfigError` on that shape. Use the current loader-based API below: the config file lives at the project-root-relative `src/content.config.ts` (not inside a `content/` subdirectory), and every collection needs an explicit `loader`.**
 
 ```ts
 import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 const blog = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
@@ -2385,6 +2388,8 @@ const blog = defineCollection({
 
 export const collections = { blog };
 ```
+
+Note: the markdown post files themselves still live under `src/content/blog/` — only the collection *definition* file moves to the project's `src/content.config.ts`. The glob loader's default entry identifier is `id` (derived from the file path), not `slug` — this affects Steps 3-4 below.
 
 - [ ] **Step 2: Create `src/content/blog/practical-ma-playbook-for-founders.md`**
 
@@ -2444,7 +2449,7 @@ const posts = (await getCollection('blog')).sort(
             </div>
           ) : (
             posts.map((post, index) => {
-              const href = post.data.externalUrl ?? `/blog/${post.slug}/`;
+              const href = post.data.externalUrl ?? `/blog/${post.id}/`;
               const isExternal = Boolean(post.data.externalUrl);
               return (
                 <article class={`blog-card card fade-in ${index > 0 && index <= 3 ? `fade-in-delay-${index}` : ''}`}>
@@ -2492,7 +2497,7 @@ import { getCollection, render } from 'astro:content';
 export async function getStaticPaths() {
   const posts = await getCollection('blog', (entry) => !entry.data.externalUrl);
   return posts.map((post) => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
     props: { post },
   }));
 }
@@ -2503,7 +2508,7 @@ const { Content } = await render(post);
 <Base
   title={`${post.data.title} — Watertower Advisors`}
   description={post.data.excerpt}
-  path={`/blog/${post.slug}/`}
+  path={`/blog/${post.id}/`}
 >
   <main>
     <section class="section">
@@ -2534,7 +2539,7 @@ Expected: `1`.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/content src/pages/blog.astro src/pages/blog
+git add src/content.config.ts src/content src/pages/blog.astro src/pages/blog
 git commit -m "Add blog content collection, migrate existing link-out post, remove client-side Medium fetch dependency"
 ```
 
