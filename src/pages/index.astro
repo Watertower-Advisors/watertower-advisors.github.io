@@ -1,0 +1,157 @@
+---
+import Base from '../layouts/Base.astro';
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FinancialService",
+  "@id": "https://watertoweradvisors.com/#organization",
+  "name": "Watertower Advisors",
+  "url": "https://watertoweradvisors.com",
+  "logo": "https://watertoweradvisors.com/assets/brand/watertower-wordmark-white.png",
+  "description": "Boutique investment bank advising venture-backed companies on M&A and capital raising. Serving early- and growth-stage companies from $10M–$250M.",
+  "telephone": "+14244805449",
+  "email": "info@watertoweradvisors.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "8383 Wilshire Blvd. Suite 815",
+    "addressLocality": "Beverly Hills",
+    "addressRegion": "CA",
+    "postalCode": "90211",
+    "addressCountry": "US"
+  },
+  "areaServed": "US",
+  "foundingDate": "2010",
+  "sameAs": ["https://www.linkedin.com/company/watertower-advisors"],
+  "serviceType": [
+    "Sell-Side M&A Advisory",
+    "Buy-Side M&A Advisory",
+    "Capital Raising",
+    "Corporate Development Advisory"
+  ]
+};
+---
+<Base
+  title="Watertower Advisors | Boutique Investment Bank — Los Angeles"
+  description="Boutique investment bank in Los Angeles advising venture-backed companies on M&A and capital raising ($10M–$250M). Founder-first approach."
+  path="/"
+>
+  <script type="application/ld+json" slot="schema" set:html={JSON.stringify(schema)} />
+
+  <main>
+    <section class="hero hero--image" style="background-image:url('/assets/hero/la-palms.jpg')">
+      <div class="container hero__inner">
+        <h1 style="font-size:clamp(30px,4vw,50px)">Boutique Investment Bank for M&amp;A &amp; Capital Raising in Los Angeles</h1>
+        <p>Watertower Advisors is a Los Angeles-based boutique investment bank partnering with early- and growth-stage, venture-backed companies for fundraising and M&amp;A across the U.S. and global markets.</p>
+        <div class="actions">
+          <a class="btn btn--primary" href="/contact.html">Let's Talk</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section stats-section" aria-labelledby="stats-heading">
+      <h2 id="stats-heading" class="visually-hidden">Stats</h2>
+      <div class="container fade-in" style="text-align:center; margin-bottom:32px">
+        <p class="lead" style="margin:0 auto; max-width:820px">Boutique M&amp;A advisory and capital raising for venture-backed technology, AI, media, and consumer internet companies — Los Angeles and nationwide.</p>
+      </div>
+      <div class="container grid grid-3">
+        <div class="stat card fade-in">
+          <div class="stat__value" data-count="25">25</div>
+          <div class="stat__label">Years of Advisory Experience</div>
+        </div>
+        <div class="stat card fade-in fade-in-delay-1">
+          <div class="stat__value">$1B+</div>
+          <div class="stat__label">Transaction Value</div>
+        </div>
+        <div class="stat card fade-in fade-in-delay-2">
+          <div class="stat__value">60+</div>
+          <div class="stat__label">Deals Completed</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="services-heading">
+      <div class="container fade-in">
+        <div class="kicker">What We Do</div>
+        <h2 id="services-heading" class="h2">Advisory services for founders</h2>
+        <p class="lead">We advise venture-backed teams through pivotal growth moments, aligning the right capital and strategic counterparties to accelerate outcomes.</p>
+      </div>
+      <div class="container grid grid-2" style="margin-top:32px">
+        <article class="card fade-in">
+          <h3 class="h3">Capital Raising</h3>
+          <p class="body">$10M-$200M+ equity and debt financing for early and mid-stage companies. Complete mandate management from document preparation to close.</p>
+          <a href="/services.html#capital-raising" class="service-link">Learn more →</a>
+        </article>
+        <article class="card fade-in fade-in-delay-1">
+          <h3 class="h3">Mergers &amp; Acquisitions</h3>
+          <p class="body">Strategic M&amp;A advisory for transactions between $10M-$250M+. Bespoke approach connecting you to industry leaders from roadshow to close.</p>
+          <a href="/services.html#ma" class="service-link">Learn more →</a>
+        </article>
+        <article class="card fade-in fade-in-delay-2">
+          <h3 class="h3">Corporate Development</h3>
+          <p class="body">Strategic partnerships and alliances across emerging tech, consumer internet, media tech, and blockchain technologies.</p>
+          <a href="/services.html#corp-dev" class="service-link">Learn more →</a>
+        </article>
+        <article class="card fade-in fade-in-delay-3">
+          <h3 class="h3">Buy-Side M&amp;A</h3>
+          <p class="body">Expert acquisition advisory to grow market share, launch revenue streams, and acquire talent with strategic guidance on valuations.</p>
+          <a href="/services.html#buy-side" class="service-link">Learn more →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section--tight" aria-labelledby="ai-spotlight-heading">
+      <div class="container fade-in">
+        <div class="card" style="background:var(--card)">
+          <div class="grid grid-2">
+            <div>
+              <div class="kicker">Sector Focus</div>
+              <h2 id="ai-spotlight-heading" class="h2">Actively advising founders building with AI</h2>
+              <p class="lead">From generative AI platforms to AI infrastructure and applied AI across verticals, we bring deep sector knowledge and an active network to help AI companies raise capital, find strategic partners, and execute transactions.</p>
+              <a href="/industries.html#ai-ml" class="btn btn--secondary" style="margin-top:16px">Explore AI &amp; ML →</a>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:flex-end">
+              <div style="text-align:right; max-width:280px">
+                <div style="font-size:2.5rem; font-weight:800; color:var(--accent); font-family:var(--font-heading); line-height:1">AI & ML</div>
+                <div style="color:var(--muted); margin-top:8px; font-size:0.95rem">Generative AI · AI Infrastructure · AI Agents · Applied AI · AI-Native SaaS · MLOps</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section testimonials-teaser" aria-labelledby="testimonials-teaser-heading">
+      <div class="container fade-in">
+        <div class="kicker" style="text-align:center">Founders We've Worked With</div>
+        <h2 id="testimonials-teaser-heading" class="h2" style="text-align:center">Trusted by industry leaders</h2>
+        <div class="client-logos">
+          <img src="/assets/logos/machinima.png" alt="Machinima" class="client-logo" loading="lazy">
+          <img src="/assets/logos/tripp.png" alt="TRIPP" class="client-logo" loading="lazy">
+          <img src="/assets/logos/riot-games.png" alt="Riot Games" class="client-logo" loading="lazy">
+          <img src="/assets/logos/mesh.png" alt="Mesh" class="client-logo" loading="lazy">
+          <img src="/assets/logos/airbit.png" alt="Airbit" class="client-logo" loading="lazy">
+          <img src="/assets/logos/repost.png" alt="Repost" class="client-logo" loading="lazy">
+          <img src="/assets/logos/bot-auto.png" alt="Bot.Auto" class="client-logo" loading="lazy">
+          <img src="/assets/logos/kangaroo.png" alt="Kangaroo" class="client-logo" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--tight" aria-labelledby="cta-home">
+      <div class="container fade-in">
+        <div class="card" style="background:var(--card)">
+          <div class="grid grid-2">
+            <div>
+              <div class="kicker">Get Started</div>
+              <h2 id="cta-home" class="h2">Exploring a raise, sale, or partnership?</h2>
+              <p class="lead">We'd love to learn about your company and share how we can help.</p>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:flex-end">
+              <a class="btn btn--primary" href="/contact.html">Contact Us</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Base>
