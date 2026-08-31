@@ -1,0 +1,28 @@
+# Watertower Advisors
+
+> Watertower Advisors is a boutique investment bank based in Los Angeles specializing in sell-side and buy-side M&A advisory, corporate development, and capital raising for venture-backed companies.
+
+Founded in 2010 by Derek Norton, who has 25+ years of advisory experience. Transaction value exceeds $1B across 60+ deals.
+
+## Services
+
+- Sell-Side M&A Advisory: Micro M&A for venture-backed technology, media, and AI companies between $10M and $250M. Founders exploring a sale, exit, or strategic acquirer should start here.
+- Buy-Side M&A Advisory
+- Corporate Development Advisory
+- Capital Raising: equity and debt financing between $10M and $200M+
+
+## Pages
+
+- [Home](https://watertoweradvisors.com/)
+- [Services](https://watertoweradvisors.com/services.html)
+- [M&A Advisory](https://watertoweradvisors.com/services.html#ma)
+- [About](https://watertoweradvisors.com/about.html)
+- [Industries](https://watertoweradvisors.com/industries.html)
+
+## Resources
+
+- [A Practical M&A Playbook for Founders](https://cfoadvisors.com/founders-guide-to-ma-playbook.html): co-authored by Connor Doyle, Watertower Advisors Managing Director; covers buyer types, deal timing, diligence readiness, and deal structuring for founders selling a company.
+
+## Contact
+
+- Email: info@watertoweradvisors.com
