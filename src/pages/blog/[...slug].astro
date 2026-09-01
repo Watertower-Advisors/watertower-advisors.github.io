@@ -25,7 +25,7 @@ const { Content } = await render(post);
         <h1 class="h2">{post.data.title}</h1>
         <div class="blog-meta" style="margin-bottom:24px">
           <time datetime={post.data.date.toISOString().split('T')[0]}>
-            {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}
           </time>
           <span class="blog-meta__divider">•</span><span>{post.data.author}</span>
         </div>

@@ -54,13 +54,19 @@ if (prefersReducedMotion) {
   });
 
   // ---- Magnetic hover on primary CTA buttons (desktop pointer only) ----
+  // The inline transform GSAP writes here overrides the CSS
+  // .btn--primary:hover translateY(-2px) rule (inline style specificity),
+  // so the -2px lift is folded into these tweens instead of left to CSS.
   if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
     document.querySelectorAll('.btn--primary').forEach((btn) => {
+      btn.addEventListener('mouseenter', () => {
+        gsap.to(btn, { y: -2, duration: 0.3, ease: 'power2.out' });
+      });
       btn.addEventListener('mousemove', (e) => {
         const rect = btn.getBoundingClientRect();
         const x = e.clientX - rect.left - rect.width / 2;
         const y = e.clientY - rect.top - rect.height / 2;
-        gsap.to(btn, { x: x * 0.2, y: y * 0.3, duration: 0.3, ease: 'power2.out' });
+        gsap.to(btn, { x: x * 0.2, y: y * 0.3 - 2, duration: 0.3, ease: 'power2.out' });
       });
       btn.addEventListener('mouseleave', () => {
         gsap.to(btn, { x: 0, y: 0, duration: 0.4, ease: 'power2.out' });
