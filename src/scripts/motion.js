@@ -1,7 +1,8 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -63,28 +64,22 @@ if (prefersReducedMotion) {
       scrollTrigger: { trigger: el, start: 'top 85%', once: true },
     });
   });
-  gsap.utils.toArray('.industry-visual').forEach((visual) => {
-    const bars = visual.querySelectorAll('.visual-bar');
-    if (bars.length > 0) {
-      gsap.from(bars, {
-        scaleY: 0,
-        transformOrigin: 'bottom',
-        duration: 0.6,
-        stagger: 0.05,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: visual, start: 'top 85%', once: true },
-      });
-    }
-    const pixels = visual.querySelectorAll('.visual-pixel');
-    if (pixels.length > 0) {
-      gsap.from(pixels, {
-        scale: 0,
-        duration: 0.4,
-        stagger: 0.04,
-        ease: 'back.out(2)',
-        scrollTrigger: { trigger: visual, start: 'top 85%', once: true },
-      });
-    }
+  // Continuous ambient motion (pulsing nodes, rippling rings, the equalizer
+  // bars, the blinking window dots, the twinkling pixel grid) is pure CSS
+  // (see IndustryVisual.astro) — it never shares a property with anything
+  // GSAP touches here, by design, after the last round's bug.
+
+  // ---- Aerospace: a craft travels the flight path on a continuous loop ----
+  gsap.utils.toArray('.visual-orbit-dot').forEach((dot) => {
+    const path = dot.closest('svg')?.querySelector(dot.dataset.path);
+    if (!path) return;
+    gsap.to(dot, {
+      motionPath: { path, align: path, alignOrigin: [0.5, 0.5] },
+      duration: 3.2,
+      repeat: -1,
+      ease: 'power1.inOut',
+      scrollTrigger: { trigger: dot.closest('.industry-visual'), start: 'top 85%', once: true },
+    });
   });
 
   // ---- Magnetic hover on primary CTA buttons (desktop pointer only) ----
