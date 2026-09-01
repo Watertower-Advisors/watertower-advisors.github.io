@@ -69,17 +69,70 @@ if (prefersReducedMotion) {
   // (see IndustryVisual.astro) — it never shares a property with anything
   // GSAP touches here, by design, after the last round's bug.
 
-  // ---- Aerospace: a craft travels the flight path on a continuous loop ----
+  // ---- Aerospace: a craft (plus a fading comet trail behind it) travels the flight path ----
   gsap.utils.toArray('.visual-orbit-dot').forEach((dot) => {
     const path = dot.closest('svg')?.querySelector(dot.dataset.path);
     if (!path) return;
+    const duration = 3.2;
     gsap.to(dot, {
       motionPath: { path, align: path, alignOrigin: [0.5, 0.5] },
-      duration: 3.2,
+      duration,
       repeat: -1,
       ease: 'power1.inOut',
+      // A negative delay starts the tween partway into its own cycle, so
+      // the trailing dots are always a beat behind the leader on the same path.
+      delay: -duration * Number(dot.dataset.lag || 0),
       scrollTrigger: { trigger: dot.closest('.industry-visual'), start: 'top 85%', once: true },
     });
+  });
+
+  // ---- Robotics: a real cascading arm — rotating the shoulder group carries
+  // the elbow and wrist with it, exactly like a jointed arm, not three
+  // independently-spinning lines ----
+  gsap.utils.toArray('.industry-visual').forEach((visual) => {
+    const shoulder = visual.querySelector('#visual-joint-shoulder');
+    const elbow = visual.querySelector('#visual-joint-elbow');
+    const wrist = visual.querySelector('#visual-joint-wrist');
+    if (!shoulder || !elbow || !wrist) return;
+    const tl = gsap.timeline({
+      repeat: -1,
+      yoyo: true,
+      defaults: { ease: 'sine.inOut', duration: 2.2 },
+      scrollTrigger: { trigger: visual, start: 'top 85%', once: true },
+    });
+    tl.to(shoulder, { rotation: 8 }, 0)
+      .to(elbow, { rotation: -14 }, 0)
+      .to(wrist, { rotation: 10 }, 0.3);
+  });
+
+  // ---- Creator economy: audience orbits the creator, content bursts outward ----
+  gsap.utils.toArray('.visual-orbit-group').forEach((group) => {
+    gsap.to(group, {
+      rotation: 360,
+      duration: 9,
+      repeat: -1,
+      ease: 'none',
+      transformOrigin: 'center',
+      scrollTrigger: { trigger: group.closest('.industry-visual'), start: 'top 85%', once: true },
+    });
+  });
+  gsap.utils.toArray('.visual-burst').forEach((particle) => {
+    const angle = (Number(particle.dataset.angle) * Math.PI) / 180;
+    gsap.fromTo(
+      particle,
+      { x: 0, y: 0, opacity: 1, scale: 1 },
+      {
+        x: Math.cos(angle) * 90,
+        y: Math.sin(angle) * 90,
+        opacity: 0,
+        scale: 0.3,
+        duration: 1.8,
+        repeat: -1,
+        delay: Number(particle.dataset.delay || 0),
+        ease: 'power1.out',
+        scrollTrigger: { trigger: particle.closest('.industry-visual'), start: 'top 85%', once: true },
+      }
+    );
   });
 
   // ---- Magnetic hover on primary CTA buttons (desktop pointer only) ----

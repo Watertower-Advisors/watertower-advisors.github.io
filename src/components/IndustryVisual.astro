@@ -74,23 +74,33 @@ const { variant, label } = Astro.props;
       <path class="visual-draw" d="M40 240 C 120 240, 160 80, 340 60" fill="none" stroke="#E0A72B" stroke-width="1.5" stroke-dasharray="6 6" opacity="0.6" />
       <path id="visual-flight-path" class="visual-draw" d="M40 200 Q 200 260 350 140" fill="none" stroke="#E0A72B" stroke-width="2" opacity="0.9" />
       <path d="M345 128 L370 140 L345 152 L352 140 Z" fill="#E0A72B" />
-      <circle class="visual-orbit-dot" r="5" fill="#F1C24F" data-path="#visual-flight-path" />
+      <!-- Comet trail: four fading ghost dots share the leader's path, each
+           started mid-cycle via a negative delay, so they always trail behind it. -->
+      <circle class="visual-orbit-dot visual-orbit-trail" r="3.5" fill="#E0A72B" opacity="0.15" data-path="#visual-flight-path" data-lag="0.24" />
+      <circle class="visual-orbit-dot visual-orbit-trail" r="4" fill="#E0A72B" opacity="0.3" data-path="#visual-flight-path" data-lag="0.16" />
+      <circle class="visual-orbit-dot visual-orbit-trail" r="4.5" fill="#F1C24F" opacity="0.55" data-path="#visual-flight-path" data-lag="0.08" />
+      <circle class="visual-orbit-dot" r="5" fill="#F1C24F" data-path="#visual-flight-path" data-lag="0" />
     </svg>
   )}
   {variant === 'robotics' && (
     <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
       <rect width="400" height="300" fill="#14181C" />
-      <g stroke="#E0A72B" stroke-width="4" stroke-linecap="round" class="visual-arm-group">
-        <line class="visual-draw visual-arm-seg" x1="90" y1="230" x2="150" y2="140" style="transform-origin:90px 230px" />
-        <line class="visual-draw visual-arm-seg" x1="150" y1="140" x2="230" y2="160" style="transform-origin:150px 140px" />
-        <line class="visual-draw visual-arm-seg" x1="230" y1="160" x2="290" y2="90" style="transform-origin:230px 160px" />
+      <!-- Nested groups so a rotation at the shoulder carries the elbow and
+           wrist with it, and an elbow rotation carries the wrist: three real
+           cascading joints instead of three lines rotating independently. -->
+      <g class="visual-joint" id="visual-joint-shoulder" style="transform-origin:90px 230px">
+        <line stroke="#E0A72B" stroke-width="4" stroke-linecap="round" class="visual-draw" x1="90" y1="230" x2="150" y2="140" />
+        <g class="visual-joint" id="visual-joint-elbow" style="transform-origin:150px 140px">
+          <line stroke="#E0A72B" stroke-width="4" stroke-linecap="round" class="visual-draw" x1="150" y1="140" x2="230" y2="160" />
+          <g class="visual-joint" id="visual-joint-wrist" style="transform-origin:230px 160px">
+            <line stroke="#E0A72B" stroke-width="4" stroke-linecap="round" class="visual-draw" x1="230" y1="160" x2="290" y2="90" />
+            <circle fill="#14181C" stroke="#E0A72B" stroke-width="3" cx="290" cy="90" r="9" />
+          </g>
+          <circle fill="#14181C" stroke="#E0A72B" stroke-width="3" cx="230" cy="160" r="9" />
+        </g>
+        <circle fill="#14181C" stroke="#E0A72B" stroke-width="3" cx="150" cy="140" r="9" />
       </g>
-      <g fill="#14181C" stroke="#E0A72B" stroke-width="3">
-        <circle class="visual-pulse-node" cx="90" cy="230" r="9" style="animation-delay:0s" />
-        <circle class="visual-pulse-node" cx="150" cy="140" r="9" style="animation-delay:0.4s" />
-        <circle class="visual-pulse-node" cx="230" cy="160" r="9" style="animation-delay:0.8s" />
-        <circle class="visual-pulse-node" cx="290" cy="90" r="9" style="animation-delay:1.2s" />
-      </g>
+      <circle fill="#14181C" stroke="#E0A72B" stroke-width="3" cx="90" cy="230" r="9" />
     </svg>
   )}
   {variant === 'creator-economy' && (
@@ -102,6 +112,17 @@ const { variant, label } = Astro.props;
         <circle class="visual-ripple" cx="150" cy="150" r="20" stroke-width="1.5" style="animation-delay:1.2s" />
         <circle class="visual-ripple" cx="150" cy="150" r="20" stroke-width="1.5" style="animation-delay:1.8s" />
       </g>
+      <!-- Audience: three nodes orbit the creator as one rotating group. -->
+      <g class="visual-orbit-group" style="transform-origin:150px 150px">
+        <circle cx="150" cy="70" r="5" fill="#F1C24F" />
+        <circle cx="220" cy="190" r="5" fill="#F1C24F" opacity="0.8" />
+        <circle cx="80" cy="190" r="5" fill="#F1C24F" opacity="0.6" />
+      </g>
+      <!-- Broadcast bursts: small particles launch outward from the creator
+           and fade, repeating at staggered angles. -->
+      <circle class="visual-burst" cx="150" cy="150" r="4" fill="#E0A72B" data-angle="20" data-delay="0" />
+      <circle class="visual-burst" cx="150" cy="150" r="4" fill="#E0A72B" data-angle="140" data-delay="0.7" />
+      <circle class="visual-burst" cx="150" cy="150" r="4" fill="#E0A72B" data-angle="260" data-delay="1.4" />
       <circle cx="150" cy="150" r="7" fill="#E0A72B" />
     </svg>
   )}
