@@ -11,7 +11,7 @@ const breadcrumbSchema = {
 };
 ---
 <Base
-  title="Contact — Watertower Advisors"
+  title="Contact | Watertower Advisors"
   description="Get in touch with Watertower Advisors. We advise venture-backed founders on M&A and capital raising. Reach us at info@watertoweradvisors.com or (424) 480-5449."
   path="/contact.html"
   current="contact"
@@ -76,7 +76,7 @@ const breadcrumbSchema = {
         }).then(function(result){
           if (result.ok && result.body && result.body.success) {
             form.reset();
-            status.textContent = "Thanks — your message is on its way. We'll be in touch shortly.";
+            status.textContent = "Thanks! Your message is on its way. We'll be in touch shortly.";
             status.classList.add('contact-form__status--success');
           } else {
             var msg = (result.body && result.body.message) || 'Something went wrong. Please email info@watertoweradvisors.com directly.';

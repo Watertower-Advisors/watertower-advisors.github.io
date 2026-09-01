@@ -6,7 +6,7 @@ gsap.registerPlugin(ScrollTrigger);
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 if (prefersReducedMotion) {
-  // Final state is already the default markup — nothing to animate, nothing to undo.
+  // Final state is already the default markup, nothing to animate, nothing to undo.
 } else {
   // ---- Hero headline stagger reveal ----
   const heroInner = document.querySelector('.hero__inner');
@@ -35,23 +35,6 @@ if (prefersReducedMotion) {
       });
     });
   }
-
-  // ---- Stat and service card entrance (layered on top of the existing fade-in observer) ----
-  gsap.utils.toArray('.stat.card, .service-summary-card').forEach((card, i) => {
-    gsap.from(card, {
-      opacity: 0,
-      y: 20,
-      scale: 0.97,
-      duration: 0.5,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: card,
-        start: 'top 90%',
-        toggleActions: 'play none none none',
-      },
-      delay: (i % 4) * 0.06,
-    });
-  });
 
   // ---- Magnetic hover on primary CTA buttons (desktop pointer only) ----
   // The inline transform GSAP writes here overrides the CSS
