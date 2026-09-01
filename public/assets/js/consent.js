@@ -42,7 +42,7 @@
     inner.style.gap = '12px';
 
     var msg = document.createElement('div');
-    msg.innerHTML = 'Watertower Advisors use cookies to enhance your experience on our website and help us show you more relevant content and help our website run effectively. Some cookies are necessary and are always active. Read more in our <a href="legal.html#cookies" style="color:#E85C3A;text-decoration:underline">Cookie Policy</a>.';
+    msg.innerHTML = 'Watertower Advisors use cookies to enhance your experience on our website and help us show you more relevant content and help our website run effectively. Some cookies are necessary and are always active. Read more in our <a href="/legal.html#cookies" style="color:#E0A72B;text-decoration:underline">Cookie Policy</a>.';
 
     var actions = document.createElement('div');
     var btnAccept = document.createElement('button');
@@ -81,7 +81,7 @@
     });
 
     Object.assign(btnAccept.style,{
-      background: '#E85C3A',
+      background: '#E0A72B',
       color: '#ffffff',
       border: 'none',
       padding: '9px 20px',
