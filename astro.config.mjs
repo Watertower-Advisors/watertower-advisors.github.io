@@ -6,5 +6,10 @@ export default defineConfig({
   build: {
     format: 'file',
   },
-  integrations: [sitemap()],
+  integrations: [sitemap({
+    serialize(item) {
+      if (!item.url.endsWith('/') && !item.url.endsWith('.html')) item.url += '.html';
+      return item;
+    },
+  })],
 });

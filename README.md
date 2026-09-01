@@ -72,6 +72,8 @@ Defined as CSS custom properties in `src/styles/global.css`:
 
 Hosted on GitHub Pages via GitHub Actions (`.github/workflows/deploy.yml`). Pushing to `main` triggers `npm ci && npm run build`, then deploys the `dist/` output. No manual deploy step, no secrets required (uses GitHub's built-in Pages token).
 
+The workflow's `Setup Pages` step (`actions/configure-pages@v5`) switches the repo's Pages source to "GitHub Actions" automatically on a successful run. If the very first deploy after this changes fails or the site 404s, check Settings → Pages → Build and deployment → Source and set it to "GitHub Actions" manually, then re-run the workflow.
+
 The custom domain (`watertoweradvisors.com`) is set via `public/CNAME`, which Astro copies into every build.
 
 ## Contact
