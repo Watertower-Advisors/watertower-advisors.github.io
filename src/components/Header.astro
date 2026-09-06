@@ -1,0 +1,24 @@
+---
+interface Props {
+  current?: 'about' | 'services' | 'industries' | 'blog' | 'contact' | '';
+}
+const { current = '' } = Astro.props;
+---
+<header class="header">
+  <div class="container nav">
+    <a class="nav__brand" href="/index.html">
+      <img src="/assets/brand/watertower-wordmark-white.png" alt="Watertower Advisors" />
+    </a>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="nav__links" aria-label="Primary">
+      <a class="nav__link" href="/about.html" aria-current={current === 'about' ? 'page' : undefined}>About</a>
+      <a class="nav__link" href="/services.html" aria-current={current === 'services' ? 'page' : undefined}>Services</a>
+      <a class="nav__link" href="/industries.html" aria-current={current === 'industries' ? 'page' : undefined}>Industries</a>
+      <a class="nav__link" href="/contact.html" aria-current={current === 'contact' ? 'page' : undefined}>Contact</a>
+    </nav>
+  </div>
+</header>

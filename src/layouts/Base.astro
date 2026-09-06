@@ -1,0 +1,53 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  current?: 'about' | 'services' | 'industries' | 'blog' | 'contact' | '';
+  bodyClass?: string;
+}
+
+const { title, description, path, current = '', bodyClass } = Astro.props;
+const canonical = new URL(path, Astro.site).toString();
+const ogImage = new URL('/assets/og-image.jpg', Astro.site).toString();
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Watertower Advisors" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <link rel="icon" href="/assets/brand/favicon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/favicon.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/brand/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/logos/apple-touch-icon.png" />
+    <script src="/assets/js/consent.js" defer></script>
+    <slot name="schema" />
+  </head>
+  <body class={bodyClass}>
+    <div class="page-loader">
+      <div class="loader-spinner"></div>
+    </div>
+    <Header current={current} />
+    <slot />
+    <Footer />
+    <script src="/scripts/main.js" defer></script>
+    <script src="../scripts/smooth-scroll.js"></script>
+  </body>
+</html>
