@@ -79,4 +79,3 @@ The custom domain (`watertoweradvisors.com`) is set via `public/CNAME`, which As
 ## Contact
 
 - Email: info@watertoweradvisors.com
-- Phone: (424) 480-5449
