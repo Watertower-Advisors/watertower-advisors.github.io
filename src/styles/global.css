@@ -393,6 +393,17 @@ body.contact-page main.contact-fullpage{
 .testimonials-teaser{background:var(--card)}
 .testimonials-section{background:var(--bg)}
 
+.testimonial-quote{
+  max-width:760px; margin:40px auto 0; text-align:center; padding:32px;
+}
+.testimonial-quote blockquote{
+  margin:0 0 16px; font-size:18px; line-height:1.7; font-style:italic; color:var(--ink);
+}
+.testimonial-quote cite{
+  display:block; font-style:normal; color:var(--muted); font-size:14px;
+}
+.testimonial-quote cite strong{color:var(--ink); font-weight:600}
+
 @media (max-width:1024px){
   .service-features{grid-template-columns:1fr}
 }
