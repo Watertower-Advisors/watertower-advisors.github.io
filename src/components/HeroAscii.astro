@@ -1,0 +1,478 @@
+---
+// Dot-matrix wireframe of Griffith Observatory with the Hollywood Sign on the
+// ridge behind it. A hand-built 3D line model is projected onto a character
+// grid every frame and drawn as glyphs on a 2D canvas. Decorative only.
+---
+<canvas class="hero-ascii" aria-hidden="true"></canvas>
+
+<style>
+  .hero-ascii{
+    position:absolute; inset:0; width:100%; height:100%;
+    display:block; pointer-events:none; z-index:0;
+  }
+</style>
+
+<script>
+  const canvas = document.querySelector<HTMLCanvasElement>('.hero-ascii');
+  const host = canvas?.parentElement;
+  const ctx = canvas?.getContext('2d', { alpha: false });
+
+  if (canvas && host && ctx) {
+    type Vec = { x: number; y: number; z: number };
+    type Seg = { a: Vec; b: Vec; kind: number; weight: number; pattern: number; n: Vec | null };
+
+    // Brand palette: Ink ground, Cream lines, Amber domes and accent glyphs,
+    // Paper for the sign so it reads at a distance.
+    const BG = '#14181C';
+    const COLORS = ['#F5F2EB', '#E0A72B', '#FDFBF7', '#A9ACAF'];
+    const CREAM = 0, AMBER = 1, PAPER = 2, SLATE = 3;
+
+    // Character cell size in CSS px; phones get a finer grid so the model keeps its detail.
+    let CELL_W = 6.2, CELL_H = 7.6;
+    const ACCENT_SHARE = 0.06;   // share of building cells drawn as an amber "$"
+    const DPR = Math.min(2, window.devicePixelRatio || 1);
+
+    const V = (x: number, y: number, z: number): Vec => ({ x, y, z });
+    const sub = (a: Vec, b: Vec) => V(a.x - b.x, a.y - b.y, a.z - b.z);
+    const dot = (a: Vec, b: Vec) => a.x * b.x + a.y * b.y + a.z * b.z;
+    const cross = (a: Vec, b: Vec) => V(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+    const norm = (a: Vec) => { const d = Math.hypot(a.x, a.y, a.z) || 1; return V(a.x / d, a.y / d, a.z / d); };
+    const hash = (n: number) => Math.abs(Math.sin(n * 127.1) * 43758.5453123) % 1;
+
+    // ---- Model ----------------------------------------------------------
+    // Units are roughly 5m. x runs along the facade, y is up, +z faces the
+    // city (south). Segments with a normal `n` are back-face culled so domes
+    // and drums read as solids instead of cross-hatching.
+    const segments: Seg[] = [];
+    // Invisible surface samples that only write depth, so solids hide the
+    // lines behind them (hidden-line removal on a character grid).
+    const occ: number[] = [];
+    const OCC_STEP = 0.24;
+
+    function occQuad(o: Vec, u: Vec, v: Vec) {
+      const lu = Math.hypot(u.x, u.y, u.z), lv = Math.hypot(v.x, v.y, v.z);
+      const nu = Math.max(1, Math.ceil(lu / OCC_STEP)), nv = Math.max(1, Math.ceil(lv / OCC_STEP));
+      for (let i = 0; i <= nu; i++) for (let j = 0; j <= nv; j++) {
+        const a = i / nu, b = j / nv;
+        occ.push(o.x + u.x * a + v.x * b, o.y + u.y * a + v.y * b, o.z + u.z * a + v.z * b);
+      }
+    }
+    function occBox(cx: number, cy: number, cz: number, sx: number, sy: number, sz: number) {
+      const x0 = cx - sx / 2, y0 = cy - sy / 2, z0 = cz - sz / 2;
+      occQuad(V(x0, y0, z0), V(sx, 0, 0), V(0, sy, 0)); occQuad(V(x0, y0, z0 + sz), V(sx, 0, 0), V(0, sy, 0));
+      occQuad(V(x0, y0, z0), V(0, 0, sz), V(0, sy, 0)); occQuad(V(x0 + sx, y0, z0), V(0, 0, sz), V(0, sy, 0));
+      occQuad(V(x0, y0 + sy, z0), V(sx, 0, 0), V(0, 0, sz));
+    }
+    function occCylinder(cx: number, y0: number, y1: number, cz: number, r: number) {
+      const na = Math.ceil((2 * Math.PI * r) / OCC_STEP), ny = Math.ceil((y1 - y0) / OCC_STEP);
+      for (let i = 0; i < na; i++) for (let j = 0; j <= ny; j++) {
+        const t = (i / na) * Math.PI * 2;
+        occ.push(cx + r * Math.cos(t), y0 + ((y1 - y0) * j) / ny, cz + r * Math.sin(t));
+      }
+    }
+    function occDome(cx: number, y0: number, cz: number, r: number) {
+      const np = Math.ceil((Math.PI / 2 * r) / OCC_STEP);
+      for (let j = 0; j <= np; j++) {
+        const ph = (j / np) * Math.PI / 2, rr = r * Math.cos(ph);
+        const na = Math.max(1, Math.ceil((2 * Math.PI * rr) / OCC_STEP));
+        for (let i = 0; i < na; i++) {
+          const t = (i / na) * Math.PI * 2;
+          occ.push(cx + rr * Math.cos(t), y0 + r * Math.sin(ph), cz + rr * Math.sin(t));
+        }
+      }
+    }
+
+    function add(a: Vec, b: Vec, kind = CREAM, weight = 1, pattern = 1, n: Vec | null = null) {
+      segments.push({ a, b, kind, weight, pattern, n });
+    }
+    function polyline(pts: Vec[], kind = CREAM, weight = 1, pattern = 1) {
+      for (let i = 0; i < pts.length - 1; i++) add(pts[i], pts[i + 1], kind, weight, pattern);
+    }
+    function box(cx: number, cy: number, cz: number, sx: number, sy: number, sz: number, kind = CREAM, weight = 1) {
+      const x0 = cx - sx / 2, x1 = cx + sx / 2, y0 = cy - sy / 2, y1 = cy + sy / 2, z0 = cz - sz / 2, z1 = cz + sz / 2;
+      const p = [V(x0, y0, z0), V(x1, y0, z0), V(x1, y1, z0), V(x0, y1, z0), V(x0, y0, z1), V(x1, y0, z1), V(x1, y1, z1), V(x0, y1, z1)];
+      for (const [i, j] of [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]]) {
+        add(p[i], p[j], kind, weight);
+      }
+    }
+    function taperedPrism(cx: number, y0: number, y1: number, cz: number, s0: number, s1: number, kind = CREAM, weight = 1.2) {
+      const b = [V(cx - s0 / 2, y0, cz - s0 / 2), V(cx + s0 / 2, y0, cz - s0 / 2), V(cx + s0 / 2, y0, cz + s0 / 2), V(cx - s0 / 2, y0, cz + s0 / 2)];
+      const t = [V(cx - s1 / 2, y1, cz - s1 / 2), V(cx + s1 / 2, y1, cz - s1 / 2), V(cx + s1 / 2, y1, cz + s1 / 2), V(cx - s1 / 2, y1, cz + s1 / 2)];
+      for (let i = 0; i < 4; i++) {
+        add(b[i], b[(i + 1) % 4], kind, weight);
+        add(t[i], t[(i + 1) % 4], kind, weight);
+        add(b[i], t[i], kind, weight);
+      }
+    }
+    // Horizontal ring; each piece carries its outward normal for culling.
+    function ring(cx: number, y: number, cz: number, r: number, steps: number, kind = CREAM, weight = 1, pattern = 1, cull = true) {
+      for (let i = 0; i < steps; i++) {
+        const t0 = (i / steps) * Math.PI * 2, t1 = ((i + 1) / steps) * Math.PI * 2, tm = (t0 + t1) / 2;
+        add(V(cx + r * Math.cos(t0), y, cz + r * Math.sin(t0)), V(cx + r * Math.cos(t1), y, cz + r * Math.sin(t1)),
+          kind, weight, pattern, cull ? V(Math.cos(tm), 0, Math.sin(tm)) : null);
+      }
+    }
+    function drum(cx: number, y0: number, y1: number, cz: number, r: number, verticals: number, kind = CREAM, weight = 1) {
+      ring(cx, y0, cz, r, 48, kind, weight);
+      ring(cx, y1, cz, r, 48, kind, weight);
+      for (let i = 0; i < verticals; i++) {
+        const t = (i / verticals) * Math.PI * 2;
+        add(V(cx + r * Math.cos(t), y0, cz + r * Math.sin(t)), V(cx + r * Math.cos(t), y1, cz + r * Math.sin(t)),
+          kind, weight * 0.7, 0.8, V(Math.cos(t), 0, Math.sin(t)));
+      }
+    }
+    function dome(cx: number, y0: number, cz: number, r: number, meridians: number, parallels: number, kind = AMBER, weight = 1.2) {
+      const STEPS = 14;
+      for (let k = 0; k < meridians; k++) {
+        const th = (k / meridians) * Math.PI * 2;
+        for (let i = 0; i < STEPS; i++) {
+          const p0 = (i / STEPS) * Math.PI / 2, p1 = ((i + 1) / STEPS) * Math.PI / 2, pm = (p0 + p1) / 2;
+          add(
+            V(cx + r * Math.cos(p0) * Math.cos(th), y0 + r * Math.sin(p0), cz + r * Math.cos(p0) * Math.sin(th)),
+            V(cx + r * Math.cos(p1) * Math.cos(th), y0 + r * Math.sin(p1), cz + r * Math.cos(p1) * Math.sin(th)),
+            kind, weight, 1, V(Math.cos(pm) * Math.cos(th), Math.sin(pm), Math.cos(pm) * Math.sin(th)),
+          );
+        }
+      }
+      for (let j = 0; j <= parallels; j++) {
+        const ph = (j / (parallels + 1)) * Math.PI / 2;
+        ring(cx, y0 + r * Math.sin(ph), cz, r * Math.cos(ph), 56, kind, weight * (j === 0 ? 1.1 : 0.85));
+      }
+    }
+    function lantern(cx: number, y: number, cz: number, r: number) {
+      drum(cx, y, y + r * 1.3, cz, r, 6, CREAM, 1.1);
+      dome(cx, y + r * 1.3, cz, r, 6, 1, AMBER, 1.1);
+      add(V(cx, y + r * 2.3, cz), V(cx, y + r * 3.4, cz), CREAM, 1.1);
+    }
+    function arch(cx: number, z: number, y0: number, y1: number, hw: number, weight = 0.9) {
+      const shoulder = y1 - hw;
+      add(V(cx - hw, y0, z), V(cx - hw, shoulder, z), CREAM, weight);
+      add(V(cx + hw, y0, z), V(cx + hw, shoulder, z), CREAM, weight);
+      const pts: Vec[] = [];
+      for (let i = 0; i <= 16; i++) {
+        const t = Math.PI - (Math.PI * i) / 16;
+        pts.push(V(cx + hw * Math.cos(t), shoulder + hw * Math.sin(t), z));
+      }
+      polyline(pts, CREAM, weight);
+    }
+
+    function buildObservatory() {
+      // Terrace
+      polyline([V(-27, 0, -8), V(27, 0, -8), V(27, 0, 9), V(-27, 0, 9), V(-27, 0, -8)], CREAM, 0.8);
+
+      // Central hall, entrance and main dome
+      box(0, 2.7, 0, 15, 5.4, 11, CREAM, 1.2);
+      occBox(0, 2.7, 0, 15, 5.4, 11);
+      add(V(-7.5, 5.9, 5.5), V(7.5, 5.9, 5.5), CREAM, 1);          // parapet
+      add(V(-7.5, 5.9, 5.5), V(-7.5, 5.4, 5.5), CREAM, 1);
+      add(V(7.5, 5.9, 5.5), V(7.5, 5.4, 5.5), CREAM, 1);
+      for (const x of [-6, -4.6, 4.6, 6]) add(V(x, 0, 5.5), V(x, 5.4, 5.5), CREAM, 0.75);  // pilasters
+      arch(0, 5.52, 0, 4.2, 1.5, 1);
+      arch(-3, 5.52, 1.2, 3.8, 0.55, 0.7);
+      arch(3, 5.52, 1.2, 3.8, 0.55, 0.7);
+      drum(0, 5.4, 7.0, 0, 5.7, 24, CREAM, 1.1);
+      dome(0, 7.0, 0, 5.7, 20, 5, AMBER, 1.25);
+      occCylinder(0, 5.4, 7.0, 0, 5.7);
+      occDome(0, 7.0, 0, 5.7);
+      lantern(0, 12.7, 0, 0.7);
+
+      // Wings with a window rhythm, ending in the two telescope towers
+      for (const s of [-1, 1]) {
+        box(s * 13, 2.0, 0, 11, 4.0, 7, CREAM, 1);
+        occBox(s * 13, 2.0, 0, 11, 4.0, 7);
+        add(V(s * 7.5, 4.35, 3.5), V(s * 18.5, 4.35, 3.5), CREAM, 0.8);
+        for (let x = 9; x <= 17.2; x += 1.65) {
+          const wx = s * x;
+          polyline([V(wx - 0.35, 1.0, 3.52), V(wx - 0.35, 3.2, 3.52), V(wx + 0.35, 3.2, 3.52), V(wx + 0.35, 1.0, 3.52), V(wx - 0.35, 1.0, 3.52)], CREAM, 0.6);
+        }
+        const tx = s * 21.5;
+        drum(tx, 0, 6.2, 0, 3.3, 16, CREAM, 1.15);
+        ring(tx, 4.6, 0, 3.32, 48, CREAM, 0.7);
+        dome(tx, 6.2, 0, 3.3, 14, 3, AMBER, 1.2);
+        occCylinder(tx, 0, 6.2, 0, 3.3);
+        occDome(tx, 6.2, 0, 3.3);
+        lantern(tx, 9.4, 0, 0.42);
+      }
+
+      // Astronomers Monument on the front lawn, topped by an armillary sphere
+      const mz = 18;
+      box(0, 0.5, mz, 3.2, 1.0, 3.2, CREAM, 1);
+      taperedPrism(0, 1.0, 10.6, mz, 1.7, 0.95, CREAM, 1.25);
+      occBox(0, 0.5, mz, 3.2, 1.0, 3.2);
+      occBox(0, 5.8, mz, 1.15, 9.6, 1.15);
+      const sy = 11.5, sr = 0.95, pts1: Vec[] = [], pts2: Vec[] = [], pts3: Vec[] = [];
+      for (let i = 0; i <= 28; i++) {
+        const t = (i / 28) * Math.PI * 2;
+        pts1.push(V(sr * Math.cos(t), sy + sr * Math.sin(t), mz));
+        pts2.push(V(0, sy + sr * Math.sin(t), mz + sr * Math.cos(t)));
+        pts3.push(V(sr * Math.cos(t), sy, mz + sr * Math.sin(t)));
+      }
+      polyline(pts1, AMBER, 1.1); polyline(pts2, AMBER, 1.1); polyline(pts3, AMBER, 1.1);
+      add(V(-0.5, sy - 1.2, mz), V(0.5, sy + 1.2, mz), CREAM, 1);
+      ring(0, 0.02, mz, 4.5, 56, CREAM, 0.55, 0.7, false);
+
+      // Lawn and the walk up to the entrance
+      polyline([V(-12, 0, 9), V(-12, 0, 30), V(12, 0, 30), V(12, 0, 9)], CREAM, 0.5, 0.7);
+      for (const x of [-1.3, 1.3]) {
+        add(V(x, 0, 9), V(x, 0, mz - 4.5), CREAM, 0.5, 0.7);
+        add(V(x, 0, mz + 4.5), V(x, 0, 30), CREAM, 0.5, 0.7);
+      }
+    }
+
+    // Hilltop ground: flat around the building, falling away on every side.
+    function groundY(x: number, z: number) {
+      return -Math.max(0, Math.abs(z - 8) - 26) * 0.42 - Math.max(0, Math.abs(x) - 34) * 0.3;
+    }
+    function buildTerrain() {
+      for (let z = -34; z <= 70; z += 2.2) {
+        for (let x = -80; x <= 80; x += 3.4) {
+          const jx = x + (hash(x * 13 + z * 7) - 0.5) * 1.6;
+          add(V(jx, groundY(jx, z), z), V(jx + 1.1, groundY(jx + 1.1, z), z), SLATE, 0.22, 0.4);
+        }
+      }
+    }
+
+    // ---- The Hollywood Sign on the ridge behind -------------------------
+    // Stroke glyphs in a unit box (x 0..w, y 0..1).
+    const ellipse = (cx: number, cy: number, rx: number, ry: number, a0: number, a1: number, n = 18) => {
+      const out: [number, number][] = [];
+      for (let i = 0; i <= n; i++) {
+        const t = a0 + ((a1 - a0) * i) / n;
+        out.push([cx + rx * Math.cos(t), cy + ry * Math.sin(t)]);
+      }
+      return out;
+    };
+    const GLYPHS: Record<string, { w: number; strokes: [number, number][][] }> = {
+      H: { w: 0.8, strokes: [[[0, 0], [0, 1]], [[0.8, 0], [0.8, 1]], [[0, 0.5], [0.8, 0.5]]] },
+      O: { w: 0.85, strokes: [ellipse(0.425, 0.5, 0.425, 0.5, 0, Math.PI * 2, 24)] },
+      L: { w: 0.62, strokes: [[[0, 1], [0, 0], [0.62, 0]]] },
+      Y: { w: 0.85, strokes: [[[0, 1], [0.425, 0.5]], [[0.85, 1], [0.425, 0.5]], [[0.425, 0.5], [0.425, 0]]] },
+      W: { w: 1.1, strokes: [[[0, 1], [0.27, 0], [0.55, 0.65], [0.83, 0], [1.1, 1]]] },
+      D: { w: 0.8, strokes: [[[0, 0], [0, 1], [0.35, 1]], ellipse(0.35, 0.5, 0.45, 0.5, Math.PI / 2, -Math.PI / 2, 16), [[0.35, 0], [0, 0]]] },
+    };
+
+    function ridgeY(x: number) {
+      // Mount Lee and its neighbours: a long, uneven skyline
+      return 22 + 9 * Math.exp(-((x + 30) ** 2) / 900) + 4 * Math.exp(-((x - 40) ** 2) / 900)
+        + 1.6 * Math.sin(x * 0.11) + 0.8 * Math.sin(x * 0.31 + 1.3);
+    }
+    function buildHollywood() {
+      const RZ = -82;
+      const ridge: Vec[] = [];
+      for (let x = -180; x <= 150; x += 1.2) ridge.push(V(x, ridgeY(x), RZ - 4));
+      polyline(ridge, SLATE, 0.55, 0.75);
+      // a second, farther ridge for depth
+      const far: Vec[] = [];
+      for (let x = -200; x <= 170; x += 1.6) far.push(V(x, 20 + 6 * Math.sin(x * 0.035 + 0.6) + 2 * Math.sin(x * 0.12), RZ - 30));
+      polyline(far, SLATE, 0.3, 0.45);
+
+      const H = 12, GAP = 2.2;
+      const word = 'HOLLYWOOD';
+      let width = 0;
+      for (const ch of word) width += GLYPHS[ch].w * H + GAP;
+      let cursor = -42 - width / 2;
+      const signBase = ridgeY(-42) - H * 0.55;
+      [...word].forEach((ch, i) => {
+        const g = GLYPHS[ch];
+        const baseY = signBase + (hash(i + 3) - 0.5) * 1.2;   // set into the slope, slightly uneven
+        const z = RZ + (hash(i + 11) - 0.5) * 1.2;
+        for (const stroke of g.strokes) {
+          for (const off of [0, 0.45]) {
+            polyline(stroke.map(([u, v]) => V(cursor + u * H + off, baseY + v * H, z)), PAPER, 1.9);
+          }
+        }
+        // the scaffolding legs behind each letter
+        add(V(cursor + g.w * H * 0.3, baseY, z - 0.6), V(cursor + g.w * H * 0.3, baseY - 1.6, z - 0.6), SLATE, 0.5);
+        add(V(cursor + g.w * H * 0.7, baseY, z - 0.6), V(cursor + g.w * H * 0.7, baseY - 1.6, z - 0.6), SLATE, 0.5);
+        cursor += g.w * H + GAP;
+      });
+    }
+
+    buildTerrain();
+    buildHollywood();
+    buildObservatory();
+
+    // ---- Camera and raster ---------------------------------------------
+    const BASE_YAW = Math.PI / 2 - 0.55;
+    let CENTER_Y = 0.52;
+    const TARGET = V(0, 6.5, 2);
+    let yaw = BASE_YAW, pitch = 0.14, radius = 56;
+    let W = 0, H = 0, COLS = 0, ROWS = 0, fpx = 1, centerX = 0.5;
+    let cells: Uint8Array, zbuf: Float32Array, strength: Float32Array, color: Uint8Array;
+
+    function size() {
+      const r = host!.getBoundingClientRect();
+      W = Math.max(1, r.width); H = Math.max(1, r.height);
+      CELL_W = W < 640 ? 4.8 : 6.2; CELL_H = W < 640 ? 5.9 : 7.6;
+      COLS = Math.ceil(W / CELL_W); ROWS = Math.ceil(H / CELL_H);
+      cells = new Uint8Array(COLS * ROWS);
+      zbuf = new Float32Array(COLS * ROWS);
+      strength = new Float32Array(COLS * ROWS);
+      color = new Uint8Array(COLS * ROWS);
+      canvas!.width = Math.round(W * DPR); canvas!.height = Math.round(H * DPR);
+      ctx!.setTransform(DPR, 0, 0, DPR, 0, 0);
+      buildSprites();
+      // Height sets the framing; narrow screens pull back so the whole building fits.
+      const wide = W >= 1024;
+      centerX = wide ? 0.68 : 0.5;
+      CENTER_Y = wide ? 0.52 : 0.8;
+      const usable = wide ? W * 0.7 : W * 1.05;
+      fpx = Math.min((H * 0.5) / Math.tan((36 * Math.PI) / 360), usable * 0.5 / Math.tan((64 * Math.PI) / 360));
+    }
+
+    // One pre-rendered sprite per (colour, glyph): drawImage is far cheaper
+    // than thousands of fillText calls a frame.
+    let sprites: HTMLCanvasElement[][] = [];
+    function buildSprites() {
+      const sw = Math.ceil(CELL_W * DPR), sh = Math.ceil(CELL_H * DPR);
+      sprites = COLORS.map((col) => ['.', '$'].map((ch) => {
+        const c = document.createElement('canvas');
+        c.width = sw; c.height = sh;
+        const g = c.getContext('2d')!;
+        g.scale(DPR, DPR);
+        g.fillStyle = col; g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.font = `600 ${CELL_H * 0.9}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+        g.fillText(ch, CELL_W / 2, CELL_H * 0.53);
+        return c;
+      }));
+    }
+
+    function camera() {
+      const cp = Math.cos(pitch), sp = Math.sin(pitch);
+      const pos = V(TARGET.x + radius * cp * Math.cos(yaw), TARGET.y + radius * sp, TARGET.z + radius * cp * Math.sin(yaw));
+      const forward = norm(sub(TARGET, pos));
+      const right = norm(cross(forward, V(0, 1, 0)));
+      const up = cross(right, forward);
+      return { pos, forward, right, up };
+    }
+    type Cam = ReturnType<typeof camera>;
+
+    function project(p: Vec, cam: Cam) {
+      const rel = sub(p, cam.pos);
+      const z = dot(rel, cam.forward);
+      if (z < 0.5) return null;
+      return {
+        x: (W * centerX + (dot(rel, cam.right) * fpx) / z) / CELL_W,
+        y: (H * CENTER_Y - (dot(rel, cam.up) * fpx) / z) / CELL_H,
+        z,
+      };
+    }
+
+    function plot(x: number, y: number, z: number, power: number, kind: number) {
+      const ix = Math.round(x), iy = Math.round(y);
+      if (ix < 0 || ix >= COLS || iy < 0 || iy >= ROWS) return;
+      const idx = iy * COLS + ix;
+      if (z < zbuf[idx] - 0.05 || (Math.abs(z - zbuf[idx]) <= 0.05 && power > strength[idx])) {
+        zbuf[idx] = z; strength[idx] = power; color[idx] = kind; cells[idx] = 1;
+      }
+    }
+
+    function raster(seg: Seg, cam: Cam) {
+      if (seg.n) {
+        const mid = V((seg.a.x + seg.b.x) / 2, (seg.a.y + seg.b.y) / 2, (seg.a.z + seg.b.z) / 2);
+        if (dot(seg.n, sub(cam.pos, mid)) < 0) return;
+      }
+      const a = project(seg.a, cam), b = project(seg.b, cam);
+      if (!a || !b) return;
+      const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy);
+      if (len < 0.1) { plot(a.x, a.y, a.z, seg.weight, seg.kind); return; }
+      const steps = Math.max(1, Math.ceil(len * 1.5));
+      for (let i = 0; i <= steps; i++) {
+        if (seg.pattern < 1 && ((i * 0.61803398875) % 1) > seg.pattern) continue;
+        const t = i / steps, z = a.z + (b.z - a.z) * t;
+        const fade = Math.max(0.4, Math.min(1, 1.25 - z / 240));
+        plot(a.x + dx * t, a.y + dy * t, z, seg.weight * fade, seg.kind);
+      }
+    }
+
+    // Surfaces sit a little behind their own edges so those still draw.
+    const OCC_BIAS = 0.7;
+    function depthPass(cam: Cam) {
+      const { pos, right, up, forward } = cam;
+      for (let i = 0; i < occ.length; i += 3) {
+        const rx = occ[i] - pos.x, ry = occ[i + 1] - pos.y, rz = occ[i + 2] - pos.z;
+        const z = rx * forward.x + ry * forward.y + rz * forward.z;
+        if (z < 0.5) continue;
+        const ix = Math.round((W * centerX + ((rx * right.x + ry * right.y + rz * right.z) * fpx) / z) / CELL_W);
+        const iy = Math.round((H * CENTER_Y - ((rx * up.x + ry * up.y + rz * up.z) * fpx) / z) / CELL_H);
+        if (ix < 0 || ix >= COLS || iy < 0 || iy >= ROWS) continue;
+        const idx = iy * COLS + ix;
+        if (z + OCC_BIAS < zbuf[idx]) zbuf[idx] = z + OCC_BIAS;
+      }
+    }
+
+    let reveal = 1;
+    function draw() {
+      cells.fill(0); zbuf.fill(Infinity); strength.fill(0);
+      const cam = camera();
+      depthPass(cam);
+      for (const seg of segments) raster(seg, cam);
+
+      ctx!.globalAlpha = 1;
+      ctx!.fillStyle = BG;
+      ctx!.fillRect(0, 0, W, H);
+      for (let y = 0; y < ROWS; y++) {
+        for (let x = 0; x < COLS; x++) {
+          const idx = y * COLS + x;
+          if (!cells[idx]) continue;
+          if (reveal < 1 && hash(idx * 4099 + 7) > reveal) continue;
+          // Each screen cell keeps its glyph as the model moves, so nothing flickers.
+          const accent = color[idx] < PAPER && hash(idx * 8191 + 131) < ACCENT_SHARE;
+          const p = Math.max(0.08, Math.min(1, strength[idx]));
+          ctx!.globalAlpha = 0.24 + 0.76 * Math.pow(p, 0.75);
+          ctx!.drawImage(accent ? sprites[AMBER][1] : sprites[color[idx]][0], x * CELL_W, y * CELL_H, CELL_W, CELL_H);
+        }
+      }
+    }
+
+    // ---- Motion ---------------------------------------------------------
+    // A slow sway (not a full orbit, so the sign always faces us), a nudge
+    // from scroll, and a little pointer parallax. Capped at 15fps and parked
+    // whenever the hero is off screen or the tab is hidden.
+    const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const STEP = 1000 / 15;
+    const start = performance.now();
+    let raf = 0, last = 0, onScreen = true, mouse = 0, mouseEased = 0;
+
+    function updateCamera(ts: number) {
+      const t = (ts - start) / 1000;
+      const scroll = Math.min(1.5, window.scrollY / Math.max(1, H));
+      mouseEased += (mouse - mouseEased) * 0.08;
+      yaw = BASE_YAW + 0.16 * Math.sin(t * 0.12) + scroll * 0.55 + mouseEased * 0.06;
+      pitch = 0.15 + scroll * 0.08;
+      reveal = Math.min(1, t / 1.8);
+    }
+
+    function loop(ts: number) {
+      if (!onScreen || document.hidden) { raf = 0; return; }
+      raf = requestAnimationFrame(loop);
+      if (ts - last < STEP) return;
+      last = ts;
+      updateCamera(ts);
+      draw();
+    }
+    function arm() {
+      if (REDUCED) { draw(); return; }
+      if (!raf) raf = requestAnimationFrame(loop);
+    }
+
+    size();
+    draw();
+    if (!REDUCED) {
+      reveal = 0;
+      host.addEventListener('pointermove', (e) => {
+        const r = host.getBoundingClientRect();
+        mouse = ((e.clientX - r.left) / r.width - 0.5) * 2;
+      });
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver((entries) => {
+          onScreen = entries[entries.length - 1].isIntersecting;
+          if (onScreen) arm();
+        }, { rootMargin: '200px' }).observe(canvas);
+      }
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) arm(); });
+    }
+    new ResizeObserver(() => { size(); draw(); arm(); }).observe(host);
+    arm();
+  }
+</script>

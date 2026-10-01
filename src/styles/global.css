@@ -111,6 +111,27 @@ a{color:inherit; transition:var(--transition)}
 }
 .hero p{max-width:720px; margin:0 0 32px; color:#F1F5F9; font-size:clamp(16px, 2vw, 20px); line-height:1.6}
 
+/* Homepage hero: the dot matrix observatory canvas sits under a scrim that
+   keeps the headline legible on the left and fades into the page below. */
+.hero--ascii{background:var(--bg); min-height:84vh}
+.hero--ascii::after{
+  background:
+    linear-gradient(90deg, rgba(20,24,28,.92) 0%, rgba(20,24,28,.7) 30%, rgba(20,24,28,0) 52%),
+    linear-gradient(0deg, var(--bg) 0%, rgba(20,24,28,0) 22%);
+}
+@media (min-width:1024px){
+  .hero--ascii .hero__inner{max-width:var(--max); width:100%}
+  .hero--ascii .hero__inner > *{max-width:560px}
+}
+@media (max-width:1023px){
+  .hero--ascii{align-items:flex-start; min-height:92vh; padding:48px 0 min(62vw, 360px)}
+  .hero--ascii::after{
+    background:
+      linear-gradient(180deg, rgba(20,24,28,.9) 0%, rgba(20,24,28,.75) 45%, rgba(20,24,28,0) 62%),
+      linear-gradient(0deg, var(--bg) 0%, rgba(20,24,28,0) 14%);
+  }
+}
+
 /* ==== Buttons ==== */
 .actions{display:flex; gap:16px; flex-wrap:wrap}
 .btn{

@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import HeroMetrics from '../components/HeroMetrics.astro';
+import HeroAscii from '../components/HeroAscii.astro';
 
 const schema = {
   "@context": "https://schema.org",
@@ -38,7 +38,8 @@ const schema = {
   <script type="application/ld+json" slot="schema" set:html={JSON.stringify(schema)} />
 
   <main>
-    <section class="hero hero--image" style="background-image:url('/assets/hero/la-palms.jpg')">
+    <section class="hero hero--ascii">
+      <HeroAscii />
       <div class="container hero__inner">
         <h1 style="font-size:clamp(30px,4vw,50px)">Boutique Investment Bank for M&amp;A &amp; Capital Raising in Los Angeles</h1>
         <p>Watertower Advisors is a Los Angeles-based boutique investment bank partnering with early- and growth-stage, venture-backed companies for fundraising and M&amp;A across the U.S. and global markets.</p>
@@ -46,7 +47,6 @@ const schema = {
           <a class="btn btn--primary" href="/contact.html">Let's Talk</a>
         </div>
       </div>
-      <HeroMetrics />
     </section>
 
     <section class="section stats-section" aria-labelledby="stats-heading">
